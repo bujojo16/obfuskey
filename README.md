@@ -5,8 +5,8 @@ In short, a cryptocurrency wallet seedphrase reversible, offline, trustless, pas
 ## Table of content
 1. How to use
 2. How it works
-- a. Offsetting algorythm
-- b. Obfuscation multiplier
+2.a Offsetting algorythm  
+2.b Security and obfuscation multiplier  
 3. Passwords
 
 ## 1. How to use
