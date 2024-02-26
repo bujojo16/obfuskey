@@ -90,7 +90,7 @@ def main():
         print("")
         state = input("\n-> ")
         match state:
-           case "O" | "o":
+            case "O" | "o":
                 state = obfuscator(session)
             case "help" | "h" | "-h":
                 show_help()
