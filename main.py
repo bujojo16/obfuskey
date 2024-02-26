@@ -9,7 +9,7 @@ from obfuscator import Obfuscator
 
 class UserInterface:
     width = 88
-    version = "0.1"
+    version = "1.0"
     def __init__(self):
         self.text_length = 88
         self.options = {}
