@@ -60,6 +60,8 @@ z: new index
   
 z = a + b + c + ... 
 ```
+And because 3 + 5 = 7 just as much as 5 + 3 = 7, using your passwords in any order doesn't actually have any impact on the result. Both during obfuscation and desobfuscation.
+
 When retrieving (desobfuscating) our seedphrase, we simply substract these increments from the new index which is the obfuscated seedphrase index.
 
 ### 2.a Offsetting algorythm  
