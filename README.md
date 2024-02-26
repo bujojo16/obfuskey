@@ -119,11 +119,13 @@ I created this program for myself in the first place and after playing with it l
 It took quite some time and I plan on sticking around to update it and help if anyone needs.  
   
 If you feel like you would like to support this work, if this has helped you or if you simply want to give me a pat on the back, you can tip the project on these wallets:  
+```bash
 BTC: bc1q2ht2ytw5sh05fzdq9zvsc7ehc7a3hwcx8ccw30?message=tips  
 DOGE: DKXmmjW3JrUxNhm6qhTXMqbzdqm9VJLMK3  
 ADA: addr1q903tkzsm8tghwk34584yzf9ytmym37qfmtlkqe0qjp64t6lzhv9pkwk3wadrtg02gyj2ghkfhruqnkhlvpj7pyr42hs408mv4  
 ETH: 0x4BE65213406c3559631edbf41dFE0022d1C97a0c  
 DOT: 13iBEfF1m9JmTAf1WQ4KSqoWraqLLRakNu2HVut2LzzAEHs5  
+```
   
 Whether you do it or not, thanks for reading this and I hope this helps you as much as it has helped me getting out of the "paper-seedphrase-hell".  
   
