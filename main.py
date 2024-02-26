@@ -1,5 +1,6 @@
 import time
 import os
+import platform
 import utils
 from mnemonic import Mnemonic
 from seedphrase import Seedphrase
@@ -19,8 +20,8 @@ class UserInterface:
                 'obfuscator': "\n\nFor a clear description of the following steps, use [I]. To proceed forward and start choosing your mnemonic, use [P]. At any input, you can quit the program using [Q] or return to the previous menu using [B].\n\n\n  \t[I] Info\t[P] Proceed\t[B] Back\t[Q] Quit\n",
                 'mnemonic-setter': f"\n\nBelow is a list of the already available mnemonic files, located in the \"Mnemonics\" directory. Please, enter the number in front of the mnemonic's name to select it. \n\nIf the mnemonic you require is not in the list, feel free to add it in the directory and press Enter to update the files listing.\n\n\t\t[0..9] Select File\t[B] Back\t[Q] Quit \n\nCurrently listed files:\n",
                 'seedphrase-setter': "\n\nYou will now have to enter each word of your seedphrase, in the correct order, one by one and pressing Enter between every word. When the complete seedphrase has been entered, press Enter once again without typing anything to signal the end of the seedphrase. To start entering your seedphrase, use [P].\n\n If you made a mistake, press Enter and you will be able to restart the process from scratch.\n\n\n\t\t\t[P] Proceed\t[B] Back\t[Q] Quit\n",
-                'password-setter': "In order to obfuscate your seedphrase in a reversible way, you have to set a password. The obfuscation quality and security is directly depending on the password's complexity and length.\n\nA password shorter than 24 characters is not recommended. Also, in order to truely protect your seedphrase, doubling the obfuscation is recommended. You can of course add as many passwords as you wish.\n\nOnce you feel like you have enough passwords set, enter an empty password to go forward.\n\n\t[I] Info\t[C] Continue\t[B] Back\t[Q] Quit\n",
-                'output-setter': "You can now choose which action you wish to perform:\n\n\t[I] Info \t[O] Obfuscate\t[D] Desobfuscate\t[B] Back\t[Q] Quit"
+                'password-setter': "\n\nIn order to obfuscate your seedphrase in a reversible way, you have to set a password. The obfuscation quality and security is directly depending on the password's complexity and length.\n\nA password shorter than 24 characters is not recommended. Also, in order to truely protect your seedphrase, doubling the obfuscation is recommended. You can of course add as many passwords as you wish.\n\nOnce you feel like you have enough passwords set, enter an empty password to go forward.\n\n\t[I] Info\t[C] Continue\t[B] Back\t[Q] Quit\n",
+                'output-setter': "\n\nYou can now choose which action you wish to perform:\n\n\t[I] Info \t[O] Obfuscate\t[D] Desobfuscate\t[B] Back\t[Q] Quit"
                 }
         self.headers = {
                 'main': f"ObfusKey v{UserInterface.version}",
@@ -51,7 +52,7 @@ def format_string_to_fit(string, width):
     return result
 
 def get_current_level(session):
-    #TODO: Fix me - prolly useless
+    #TODO: Fix me - prolly useless check of length
     if len(session.levels) > 1:
         return session.levels[-1]
     else:
@@ -174,7 +175,7 @@ def seedphrase(session):
             print("")
             print("!!!! A seedphrase has already been set during this session !!!!".center(UserInterface.width))
             print("")
-            print("Press [P] Proceed to decide what to do with it".center(UserInterface.width))
+            print("Use [P] Proceed to decide what to do with it".center(UserInterface.width))
             print("")
             state = input("\n-> ")
         if (state == ""):
@@ -215,7 +216,7 @@ def seedphrase(session):
     return state
 
 def password_info(session):
-    text = format_string_to_fit("The obfuscation process is using the characters in your password to offset the words of your seedphrase within the mnemonic. While one password is enough to decouple the original seedphrase from the obfuscated, it doesn't provide a great brute-force resistance. Adding a second password on top significantly increases the brute-forcing resistance. In case you want to use only one password, it should be long (greater than 24char) and include multiple uncommon characters. On the other hand, doubling the passwords don't necessarily require both passwords to be very complicated and/or very different from one another to maintain good security. Anyhow, the main safety of this obfuscating system over directly encrypting the key seedphrase is that the attacker won't know if the attack is successfull only by looking at the output. He will still have to generate an API call to a chain explorer to verify each and every attempt he makes, rendering this form of attack very expensive, not reliable and practically useless.\n\nPress Enter to close this info box, \"back\" or \"b\" to leave the obfuscator and return to the main menu, \"exit\" or \"q\" to quit the program.", UserInterface.width)
+    text = format_string_to_fit("The obfuscation process is using the characters in your password to offset the words of your seedphrase within the mnemonic. While one password is enough to decouple the obfuscated seedphrase from the original one, it doesn't provide a great brute-force resistance. Adding a second password on top significantly increases the brute-forcing resistance. In case you want to use only one password, it should be long (longer than 24 characters) and include multiple uncommon characters (,;:.-_?! etc..). On the other hand, doubling the passwords don't necessarily require both passwords to be very complicated and/or very different from one another to maintain good security. \n\nPress Enter to close this info box, \"b\" to leave the obfuscator and return to the main menu, \"q\" to quit the program.", UserInterface.width)
     output = input(f"{text}\n\n-> ")
     return output
 
@@ -225,7 +226,9 @@ def set_password(session):
     i = 1
     while collecting:
         password = input(f"-> Password n.{i}: ")
-        if password == "":
+        if password == "" and password_list == []:
+            print("You need to input at least one password.")
+        elif password == "":
             for index in range(i-1):
                 print(f"Password n.{index+1}: {password_list[index]}".center(UserInterface.width))
             collecting = False
@@ -252,28 +255,10 @@ def set_password(session):
                 confirm = input("\n-> ")
 
 def output_info(session):
-    text = format_string_to_fit("Obfuscate:\n By choosing this action, your seedphrase will be obfuscated using the mnemonic and password(s). You will find a text file with the resulting obfuscated seedphrase as well as indications on your passwords in the \"Output\" directory. The name of the file is the sha256 hash of the original seedphrase so you can easily see if you have obfuscated the same seedphrase twice by mistake.\n\nDesobfuscate:\n By choosing this action, your seedphrase will be desobfuscated using the mnemonic and password(s). The outcome will only be displayed on this screen and not saved anywhere. It is up to you to write it down to use it later on. Remember to keep your desobfuscated seedphrase safe.\n\nPress Enter to close this info box, \"back\" or \"b\" to leave the obfuscator and return to the main menu, \"exit\" or \"q\" to quit the program.", UserInterface.width)
+    text = format_string_to_fit("Obfuscate:\n By choosing this action, your seedphrase will be obfuscated using the mnemonic and password(s). You will find a text file with the resulting obfuscated seedphrase as well as indications on your passwords in the \"Output\" directory. The name of the file is the sha256 hash of the original seedphrase so you can easily see if you have obfuscated the same seedphrase twice by mistake. You should tune up this file, add personal hints about the passwords that only you can understand so you will for sure be able to retrieve your seedphrase.\n\nDesobfuscate:\n By choosing this action, your seedphrase will be desobfuscated using the mnemonic and password(s). The outcome will only be displayed on this screen and not saved anywhere. It is up to you to write it down to use it later on. Remember to keep your desobfuscated seedphrase safe.\n\nPress Enter to close this info box, \"b\" to leave the obfuscator and return to the main menu, \"q\" to quit the program.", UserInterface.width)
     #TODO: only accept q or b and return empty in any other case, generalize this
     output = input(f"{text}\n\n-> ")
     return output
-
-"""def obfuscate_seedphrase(session):
-    session.seedphrase.obfuscate_seedphrase(session.password_list)
-    output = Output.create_output_file_and_write_output(session.seedphrase, session.password_list)
-    return output #session.seedphrase.get_processed_phrase()"""
-
-def obfuscate_seedphrase(session):
-    return session.seedphrase.obfuscate_and_write_output_if_not_already_processed(session.password_list)
-
-def desobfuscate_seedphrase(session):
-    session.seedphrase.desobfuscate_seedphrase(session.password_list)   
-    return session.seedphrase.get_processed_phrase()
-
-def validate_obfuscation(session):
-    validator = session
-    validator.seedphrase.phrase = session.seedphrase.processed_phrase
-    validator.seedphrase.desobfuscate_seedphrase(validator.password_list)
-    return validator.seedphrase.processed_phrase == session.seedphrase.original_seedphrase
 
 def output(session):
     session.levels.append("output-setter")
@@ -287,6 +272,8 @@ def output(session):
         match state:
             case "info" | "i" | "I":
                 state = output_info(session)
+                if state in ["b", "B"]:
+                    state = "back_5"
             case "back" | "b" | "B" :
                 state = "back_5"
             case "exit" | "q" | "Q":
@@ -297,7 +284,7 @@ def output(session):
                 input("Press Enter to continue")
                 state = ""
             case "O" | "o" :
-                result = session.obfuscator.perform_obfuscation(session.seedphrase)#obfuscate_seedphrase(session)
+                result = session.obfuscator.perform_obfuscation(session.seedphrase)
                 success = result['success']
                 saved_to_file = False
                 if success == False:
@@ -350,26 +337,24 @@ def output(session):
                                     confirming = False
                                 case _:
                                     print(f"Invalid input: \"{state}\", ignoring.")
-            #return state
     session.levels.pop()
     return state
 
 def password(session): 
-    #session.password_list = [] #Added in the loop to avoid adding on top when returning ...
     session.levels.append("password-setter")
     state = ""
     while not state in ["exit", "q", "back_4", "b"]:
         session.password_list = []
         os.system('cls' if os.name == 'nt' else 'clear')
         print_header(session)
-        #print(f"\n{session.levels}\n")
         print_text(session)
         state = input("\n-> ")
         match state:
             case "info" | "i" | "I":
                 state = password_info(session)
+                if state in ["b", "B"]:
+                    state = "back_4"
             case "back" | "b" | "B" :
-                #session.levels.pop()
                 state = "back_4"
             case "exit" | "q" | "Q":
                 return "exit"
@@ -393,18 +378,15 @@ def password(session):
 def mnemonic(session):
     session.levels.append("mnemonic-setter")
     state = ""
-    #text = format_string_to_fit(, session)
     while not state in ["exit", "q", "back_2", "b"]:
         os.system('cls' if os.name == 'nt' else 'clear')
         print_header(session)
-        #print(f"\n{session.levels}\n")       
         print_text(session)
         print(display_mnemonics())
         mnemonics = get_mnemonics()
         state = input("\n-> ")
         match state:
             case "back" | "b" :
-                #session.levels.pop()
                 state = "back_2"
             case "exit" | "q":
                 return "exit"
@@ -421,7 +403,7 @@ def mnemonic(session):
     return state
 
 def obfuscator_info(session):
-    text = format_string_to_fit("This program is going to ask you three things:\n  - The mnemonic from which your seedphrase is made (usually BIP39).\n  - Your private key under the form of a seedphrase.\n  - One or more password(s) to calculate your obfuscated seedphrase. \n\nYou will then have to choose do you want to obfuscate it or desobfuscate it. \nObfuscating it will output a text file (named by hashing your original seedphrase to help avoiding processing the same seed twice) where you will find your obfuscated seedphrase as well as one charactor from each password. You can freely modify this text file but keeping the number of hints on your passwords minimum is crucial for security. \n\nDesobfuscating will display your original seedphrase on the screen only and not save it to any text file for security reason. \n\nPress Enter to close this info box, \"back\" or \"b\" to leave the obfuscator and return to the main menu, \"exit\" or \"q\" to quit the program.", UserInterface.width)
+    text = format_string_to_fit("This program is going to ask you three things:\n  - The mnemonic from which your seedphrase is made (usually BIP39).\n  - Your private key under the form of a seedphrase.\n  - One or more password(s) to calculate your obfuscated seedphrase. \n\nYou will then have to choose do you want to obfuscate it or desobfuscate it. \nObfuscating it will output a text file (named by hashing your original seedphrase to help avoiding processing the same seed twice) where you will find your obfuscated seedphrase as well as one character from each password. \n\nYou can freely modify this text file but keeping the number of hints on your passwords minimum is crucial for security. \n\nDesobfuscating will display your original seedphrase on the screen only and not save it to any text file for security reason. \n\nPress Enter to close this info box, \"b\" to leave the obfuscator and return to the main menu, \"q\" to quit the program.", UserInterface.width)
     output = input(f"{text}\n\n-> ")
     return output
     
@@ -438,8 +420,7 @@ def obfuscator(session):
         print("Running without automated test is not safe\n\n".center(UserInterface.width))
         print("Reclone from github for safety.\n\n\n\n\n".center(UserInterface.width))
         raise Exception("DO NOT PROCEED!!!")
-    if not Mnemonic.check_hash_of_default_mnemonic() == True:
-        #test = input(Mnemonic.check_hash_of_default_mnemonic())
+    if not Mnemonic.check_hash_of_default_mnemonic(platform.system()) == True:
         os.system('cls' if os.name == 'nt' else 'clear')
         print("\n\n\n\n\n")
         print("Automated system verification test cannot start !\n\n".center(UserInterface.width))
@@ -485,6 +466,8 @@ def obfuscator(session):
         match state:
             case "info" | "i" | "I":
                 state = obfuscator_info(session)
+                if state in ["b", "B"]:
+                    state = "back_1"
             case "back" | "b" | "B" :
                 state = "back_1"
             case "exit" | "q" | "Q":
@@ -498,7 +481,7 @@ def obfuscator(session):
     return state
 
 def show_help():
-    print(format_string_to_fit("This program is meant for cryptocurrency wallet seedphrase obfuscation and recovery from said obfuscation. At every menu you can always type \"q\" and press enter to exit the program. Seedphrases and passwords are never written to disk or anywhere, no communication with any other software is made and no connection to internet is established. Typing \"b\" will take you back one level.\n\n\t\t\tPress enter to close this menu.", UserInterface.width))
+    print(format_string_to_fit("This program is meant for cryptocurrency wallet seedphrase obfuscation and recovery from said obfuscation. At every menu you can always type \"q\" and press enter to exit the program. \n\nSeedphrases and passwords are never written to disk or anywhere, no communication with any other software is made and no connection to internet is established.\n\n\t\t\tPress enter to close this menu.", UserInterface.width))
     return "start"
 
 if __name__ == '__main__':

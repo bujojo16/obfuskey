@@ -37,7 +37,7 @@ class Output:
             display_password += f"\t{i}.: **{password.password[2]}**************************\n"
             i +=1
         f = open(output_file_path, 'w')
-        f.write(f"Passwords:\n {display_password}\n\nProcessed seedphrase: {' '.join(seedphrase)}")
+        f.write(f"Passwords:\n {display_password}\n\nObfuscated seedphrase: {' '.join(seedphrase)}")
         f.write(f"\n\n\nGenerated using ObfusKey v{version}")
         f.close()
 

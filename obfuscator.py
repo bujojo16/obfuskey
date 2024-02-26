@@ -22,7 +22,6 @@ class Obfuscator:
             return {'success': False, 'message': 'Obfuscation was not successful.'}
 
     def obfuscate_seedphrase(self, phrase):
-        #indexes = seedphrase.get_seedphrase_indexes(phrase, self.mnemonic)
         work_phrase = phrase
         for password in self.password_list:
             work_phrase = Obfuscator.generate_safe_phrase(self, work_phrase, password)

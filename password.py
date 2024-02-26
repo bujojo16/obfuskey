@@ -1,10 +1,8 @@
 class Password:
-    def __init__(self, password): # mnemonic, seedphrase):
+    def __init__(self, password):
         self.password = password
         self.offset = 1
         self.offsetList = []
-        #self.calculate_password_value(mnemonic.prime)
-        #self.calculate_offsetting_list(mnemonic.prime, seedphrase.size)
 
     def calculate_password_value(self, prime_divisor):
         for character in self.password:

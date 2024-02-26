@@ -15,7 +15,6 @@ class PrimeCalculator:
             number+=1
             if (PrimeCalculator.is_prime(number)):
                 found = True
-       #print(number)
         return number
 
     def find_prime(number):
@@ -23,6 +22,3 @@ class PrimeCalculator:
             return PrimeCalculator.find_next_prime(number)
         else:
             return number
-        
-if __name__ == '__main__':
-    print(PrimeCalculator.find_next_prime(20011))

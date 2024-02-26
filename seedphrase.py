@@ -50,7 +50,7 @@ class Seedphrase:
             safe_index = self.indexes[index] + password.offsetList[index]
             safe_word = self.mnemonic[safe_index%mnemonic_size]
             safe_phrase.append(safe_word)
-        self.processed_phrase = safe_phrase#' '.join(safe_phrase)
+        self.processed_phrase = safe_phrase
         
     def retrieve_seedphrase(self, password):
         retrieved_phrase = []
@@ -59,7 +59,7 @@ class Seedphrase:
             retrieved_index = self.indexes[index] - password.offsetList[index]
             retrieved_word = self.mnemonic[retrieved_index%mnemonic_size]
             retrieved_phrase.append(retrieved_word)
-        self.processed_phrase = retrieved_phrase#' '.join(retrieved_phrase)
+        self.processed_phrase = retrieved_phrase
 
 
     def inspect_parameters_types(seedphrase):
