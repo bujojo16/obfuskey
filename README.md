@@ -4,7 +4,7 @@ In short, a cryptocurrency wallet seedphrase reversible, offline, trustless, pas
 
 ## Table of content
 1. How to use
-2. How it works
+2. How it works  
 2.a Offsetting algorythm  
 2.b Security and obfuscation multiplier  
 3. Passwords
@@ -15,13 +15,16 @@ This was written using Python 3.11 and you should definitely use this version. P
 Make sure your Python version supports case-matchers.
 
 ### 1.2 Running the program
-- clone this repository or download it and unzip it somewhere.
-- Open a command-line terminal
+- clone this repository or download it and unzip it somewhere
+- open a command-line terminal
 - navigate to the location of this repository
-- run the following command: python main.py
-- Follow the instructions
-- Read the help menu, read the info menus
-- Try with a fake seedphrase to see how it works and if it suits your need
+- run the following command:  
+```bash
+python main.py
+```
+- follow the instructions
+- read the help menu, read the info menus
+- try with a fake seedphrase to see how it works and if it suits your need
 - go to the output directory in the project to see the resulting file
 - fine tune the resulting file to make sure you will recover your passwords
 
@@ -41,23 +44,27 @@ based on a password in a way that they are not anymore the reflection of the ori
 This means that the gaps between each indexes must not be constant because offsetting the whole
 seedphrase at once is not giving much of a brute-force resistance.
 For example, a seedphrase like "test test test test" must not be equal to "sea sea sea sea" when
-obfuscated.
-
+obfuscated.  
+  
 To do so, we take the password entered and calculate an initial password value based on the
-ordinal of each character in the ASCII table:
+ordinal of each character in the ASCII table:  
+```python
         for character in self.password:
             self.offset = ord(character) * (self.offset + 1)
         self.offset = self.offset%prime_divisor
+```  
 We then populate an array the size of the seedphrase with offset indexes calculated as 
-follow:
+follow:  
+```python
          for i in range(seedphrase_length):
             self.offset = ord(self.password[i%len(self.password)]) * (self.offset +1)
             self.offsetList.append(self.offset%prime_divisor)
+```  
 This array is what we are going to use for both obfuscating and desobfuscating our seedphrase.
 
-The only difference between obfuscation and desobfuscation is the sign of the operation.
-When obfuscating, we add the password-generated indexes to each word index from our seedphrase.
-When desobfuscating, we substract the password generated indexes to each word index from our obfuscated seedphrase.
+The only difference between obfuscation and desobfuscation is the sign of the operation:
+- When obfuscating, we add the password-generated indexes to each word index from our seedphrase.
+- When desobfuscating, we substract the password generated indexes to each word index from our obfuscated seedphrase.
 
 ### b.Security and Obfuscation multiplier
 Considering any BIP-39 seedphrase, anybody can randomly input words in a random order and hope for the best to open any wallet. for a 24 words seedphrase using the BIP39 mnemonic, this gives us a potential 2.96x10^79 possibilities. Because this number is so gigantic, it renders this method useless.
