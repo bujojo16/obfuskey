@@ -3,12 +3,18 @@
 In short, a cryptocurrency wallet seedphrase reversible, offline, trustless, password based obfuscation to end the paper-seedphrase nonsense.
 
 ## Table of content
-1. How to use
+1. How to use  
+1.1 Prerequirements  
+1.2 Running the program  
 2. How it works  
 2.a Offsetting algorythm  
 2.b Security and obfuscation multiplier  
-3. Passwords
-
+3. Passwords  
+3.a What is a good password?  
+3.b What are good hints?  
+4. Evolutions
+5. Philantropy
+  
 ## 1. How to use
 ### 1.1 Prerequirements
 This was written using Python 3.11 and you should definitely use this version. Python 3 by itself won't work because the "match" operator was made available only around version 3.9 and the user interface uses quite a lot of case matchers.
@@ -36,19 +42,31 @@ To be properly exact, this program is not obfuscating your seedphrase but rather
 using one or more passwords. This re-indexation can be considered an obfuscation since it renders the 
 obfuscated seedphrase useless if the password is not known. The original idea was an obfuscation and
 the name stuck to the project while the way of doing it became clearer. I would argue that ObfusKey
-sounds a lot nicer than "Re-indexer".
-### a. Offsetting algorythm
+sounds a lot nicer than "Re-indexer".  
 In order to obfuscate your seedphrase, we need first need to stop seeing it as a phrase made of 
 words but rather a list of indexes. These indexes are going to be offset by a determinated value
 based on a password in a way that they are not anymore the reflection of the original indexes.
 This means that the gaps between each indexes must not be constant because offsetting the whole
-seedphrase at once is not giving much of a brute-force resistance.
+seedphrase at once is not giving much of a brute-force resistance.  
 For example, a seedphrase like "test test test test" must not be equal to "sea sea sea sea" when
 obfuscated.  
+For each index(word) of our seedphrase we get:
+```bash
+a: index of original seedphrase word in mnemonic  
+b: index increment derived from password  
+c: index increment derived from second password  
+..  
+z: new index  
   
+z = a + b + c + ... 
+```
+When retrieving (desobfuscating) our seedphrase, we simply substract these increments from the new index
+
+### 2.a Offsetting algorythm  
 To do so, we take the password entered and calculate an initial password value based on the
 ordinal of each character in the ASCII table:  
 ```python
+        self.offset = 1
         for character in self.password:
             self.offset = ord(character) * (self.offset + 1)
         self.offset = self.offset%prime_divisor
@@ -66,29 +84,47 @@ The only difference between obfuscation and desobfuscation is the sign of the op
 - When obfuscating, we add the password-generated indexes to each word index from our seedphrase.
 - When desobfuscating, we substract the password generated indexes to each word index from our obfuscated seedphrase.
 
-### b.Security and Obfuscation multiplier
-Considering any BIP-39 seedphrase, anybody can randomly input words in a random order and hope for the best to open any wallet. for a 24 words seedphrase using the BIP39 mnemonic, this gives us a potential 2.96x10^79 possibilities. Because this number is so gigantic, it renders this method useless.
-If an attacker is targeting you and finds your seedphrase, that's it for you.
-If an attacker is targeting you and finds your obfuscated seed phrase, things are a little different.
+### 2.b Security and Obfuscation multiplier  
+Considering any BIP-39 seedphrase, anybody can randomly input words in a random order and hope for the best to open any wallet. for a 24 words seedphrase using the BIP39 mnemonic, this gives us a potential 2.96x10^79 possibilities. Because this number is so gigantic, it renders this method useless.  
+But if an attacker is targeting you and finds your seedphrase because it is on a piece of paper or writen down somewhere, he doesn't have to do anything else than recovering your wallet and that's it for your funds. 
+If an attacker is targeting you and finds your obfuscated seed phrase, things are a little different.  
+  
+If he realizes you have obfuscated it, he can try to change words in the phrase randomly. The first problem he is going to encounter is that any result is valid because any arrangement of seedphrase words is a valid seedphrase. Unlike an encryption which is only giving a readable/valid output when broken, an obfuscation is always giving a valid result, the real validity then needs to be checked by an online block explorer of comparing it to the ledger of the blockchain you are using. This already makes the computing power required a tad bit higher than what it would be to simply bruteforce an encryption.  
+  
+Now let's say the attacker has found your obfuscation output txt-file. The only info he gets is the number of passwords and, if you haven't modified the output txt-file, he know each passwords third character but not the password length. If he wants to try break the obfuscation, he needs to go through all possible character for a length three password, then a length 4 password, then a length 5 and so on, but for every password AT THE SAME TIME. Because the obfuscation process is not keeping any "in-between" obfuscations, he can't go breaking them one password at a time but rather every passwords at the same time, for every length, and comparing the result to the ledger to see if he found your wallet.  
 
-Knowing you have obfuscated it, he can try to change words in the phrase randomly. The first problem he is going to encounter is that any result is valid. Unlike an encryption that is only valid when broken, an obfuscation is always giving a valid result, the real validity then needs to be checked by an online block explorer of comparing it to the ledger of the blockchain you are using. This already makes the computing power required a tad bit higher than what it would be to simply bruteforce an encryption.
+To imagine the amount of possibilities, let's say you are using three 16 character passwords, because he doesn't know the length of these passwords, he still have to check for infinitely long passwords but let's pretend he would know they are 16 characters, it still amount to around 4x10^92 combinaisons. This basically means he has more chances going on entering random seedphrases to recover whatever wallet would open than actually trying to break the obfuscated seedphrase he found.  
+  
+This obfuscation multiplication really helps rendering attacks useless but they are only as strong as your passwords are.  
+  
+## 3. Passwords  
+In the end, the level of security this program will bring you is directly depending on the strength of your passwords. Using very generic short passwords like "password" or "hello1" etc that can be found in dictionaries or passwords listing is not going to be of any help because the only easy way of breaking this obfuscation is by running a huge compilation of generic passwords and you should make sure yours would never be found in there.  
 
-Now let's say the attacker has seen your unaltered output txt from the obfuscation and he knows that your password has at least 3 letters and the third one is X. This means he now has to first go through all possible 3 word passwords using the 85 codepoints. Then, all the possible 4 word, then all possible 5 word .. And at every step of the way, he needs to compare the result with the ledger of the blockchain to check if he got your seedphrase.
+It is of great importance to know how to craft a good password and how to create hints that only you can understand to help retrieving this password.  
+  
+### 3.a What is a good password?
+A good password is first of all not one word but several words separated by specific characters. These words should be with both upper and lower case letters since passwords are case sensitive and these words are not normmally found in this shape in a dictionary for example. Also, the words can be non traditional word, words you have invented and that are not found in a dictionnary. Mixing languages is always a good approach as well.  
+Then, on top of that, adding very specific words or letters that tie the password to the thing you are protecting will help insure your password has never been used anywhere else, uniqueness is maybe the most important of the criterias. Lastly, dates, acronym, nicknames are a good addition.  
 
-Taking that in account, if you are using a 24 characters long password, an attacker still needs to try all possible combinations of all lengths between 3 and 24, which makes it around 2x10^46.
+As a general rule, you could say that a password must never be shorter than 12 characters and ideally should never be shorter than 24 characters but then again, in our case, if you stack 3 or 4 passwords on top of each other, it doesn't really matter if they are 12 or 15 characters long, they will provide safety.
 
-Now, I know this is lower than the original 2.96x10^79 you are getting using all the possibilities in the mnemonic meaning it is still more interesting to attack your seed this way.
-
-This is why we can use multiple obfuscation. By adding layers of obfuscation on top of already obfuscated seedphrases, we are actually multiplying our possibilities. Adding a second 24 characters long password and a second round of obfuscation to the process, we are now generating not 2* 2x10^46 but actually (2x10^46)^2 which means 4.09x10^92 which is now even bigger than the security provided by the 2048 words mnemonic.
-
-If you doubt this, consider that we don't have any info on the obfuscated seedphrased between the first and the last one, meaning the attacker cannot find one first and then focus on the other one, he will have to compute simultaneously for both passwords. And if you want to spice it up more, you can add any amount of passwords.
-
-As an example, adding twenty times the password "abcde" probably provides even more security than carefully choosing two very good 24 characters passwords. 
-
-## 3. Passwords
-In the end, the level of security this program will bring you is directly depending on the strength of your passwords. Using very generic short passwords like "password" or "hello1" etc that can be found in dictionaries or passwords listing is not going to be of any help. The only easy way of breaking this obfuscation is by running a huge compilation of generic passwords and you should make sure your password would never be found in there.
-
-### What is a good password?
-A good password is first of all not one word but several separated by unusual characters. Also, the words can be non traditional word, things you won't find in a dictionary and should definitly be with upper and lower case letters since they are not normally found with this way in dictionaries. Then, on top of that, adding very specific words or letters that tie the password to the thing you are protecting will help insure your password has never been used anywhere else. Lastly, dates, acronym, nicknames are a good addition.
-
-A password must never be shorter than 12 characters and ideally should never be shorter than 24 characters but then again, in our case, if you stack 3 or 4 passwords on top of each other, it doesn't really matter if they are 12 or 15 characters long, they will provide safety.
+### 3.b What are good hints?
+The result of the obfuscation being so strong in itself, it is very important to be sure you will remember or recover your password without having it written in full form anywhere. To help you with this, you should tune-up the resulting txt-file, adding hints and sentences about your password, pin-pointing in time so the future you can actually get it back. This should be taken in consideration when creating your password so that it truely has a meaning for yourself and yourself only.
+  
+### 4. Evolution
+Looking ahead from here, after testing it for so long and with so many different inputs, I won't be changing the calculatin algorythm and changes to the source-code should only be aesthetic or to add new features but not to modify the core code of the obfuscation since this could generate issues. You will always see the version which was used to generate your obfuscation in the output txt-file and you will always be able to retrieve this version on here but that wouldn't be very handy. I myself have obfuscated my seedphrases using this program and I don't want to make my life more difficult. In any case, you should download it and keep a copy somewhere so you can also re-use it when needed.  
+  
+### 5. Philantropy
+I created this program for myself in the first place and after playing with it long enough I decided to make a very user-friendly interface and make it available to everyone in case it would serve others and maybe help making the crypto-space more attractive because not so scary to newcomers.
+It took quite some time and I plan on sticking around to update it and help if anyone needs.  
+  
+If you feel like you would like to support this work, if this has helped you or if you simply want to give me a pat on the back, you can tip the project on these wallets:
+BTC: bc1q2ht2ytw5sh05fzdq9zvsc7ehc7a3hwcx8ccw30?message=tips
+DOGE: DKXmmjW3JrUxNhm6qhTXMqbzdqm9VJLMK3
+ADA: addr1q903tkzsm8tghwk34584yzf9ytmym37qfmtlkqe0qjp64t6lzhv9pkwk3wadrtg02gyj2ghkfhruqnkhlvpj7pyr42hs408mv4
+ETH: 0x4BE65213406c3559631edbf41dFE0022d1C97a0c
+DOT: 13iBEfF1m9JmTAf1WQ4KSqoWraqLLRakNu2HVut2LzzAEHs5  
+  
+Whether you do it or not, thanks for reading this and I hope this helps you as much as it has helped me getting out of the "paper-seedphrase-hell".  
+  
+Bujojo.
