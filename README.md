@@ -5,23 +5,25 @@ In short, a cryptocurrency wallet seedphrase reversible, offline, trustless, pas
 ## Table of content
 1. How to use
 2. How it works
-    a. Offsetting algorythm
-    b. Obfuscation multiplier
+- a. Offsetting algorythm
+- b. Obfuscation multiplier
 3. Passwords
 
 ## 1. How to use
-1.1 Prerequirements
+### 1.1 Prerequirements
 This was written using Python 3.11 and you should definitely use this version. Python 3 by itself won't work because the "match" operator was made available only around version 3.9 and the user interface uses quite a lot of case matchers.
 Make sure your Python version supports case-matchers.
 
-1.2 Running the program
-clone this repository or download it and unzip it somewhere.
-Open a command-line terminal
-navigate to the location of this repository
-run the following command: python main.py
-Follow the instructions
-Read the help menu, read the info menus
-Try with a fake seedphrase to see how it works and if it suits your need
+### 1.2 Running the program
+- clone this repository or download it and unzip it somewhere.
+- Open a command-line terminal
+- navigate to the location of this repository
+- run the following command: python main.py
+- Follow the instructions
+- Read the help menu, read the info menus
+- Try with a fake seedphrase to see how it works and if it suits your need
+- go to the output directory in the project to see the resulting file
+- fine tune the resulting file to make sure you will recover your passwords
 
 Please note it is nonsensical to run both an obfuscation and a desobfuscation on the same seedphrase
 since these operations reciprocate. You should run the desobfuscation on the result of an obfuscation.
@@ -32,7 +34,7 @@ using one or more passwords. This re-indexation can be considered an obfuscation
 obfuscated seedphrase useless if the password is not known. The original idea was an obfuscation and
 the name stuck to the project while the way of doing it became clearer. I would argue that ObfusKey
 sounds a lot nicer than "Re-indexer".
-a. Offsetting algorythm
+### a. Offsetting algorythm
 In order to obfuscate your seedphrase, we need first need to stop seeing it as a phrase made of 
 words but rather a list of indexes. These indexes are going to be offset by a determinated value
 based on a password in a way that they are not anymore the reflection of the original indexes.
@@ -57,7 +59,7 @@ The only difference between obfuscation and desobfuscation is the sign of the op
 When obfuscating, we add the password-generated indexes to each word index from our seedphrase.
 When desobfuscating, we substract the password generated indexes to each word index from our obfuscated seedphrase.
 
-b.Security and Obfuscation multiplier
+### b.Security and Obfuscation multiplier
 Considering any BIP-39 seedphrase, anybody can randomly input words in a random order and hope for the best to open any wallet. for a 24 words seedphrase using the BIP39 mnemonic, this gives us a potential 2.96x10^79 possibilities. Because this number is so gigantic, it renders this method useless.
 If an attacker is targeting you and finds your seedphrase, that's it for you.
 If an attacker is targeting you and finds your obfuscated seed phrase, things are a little different.
@@ -76,10 +78,10 @@ If you doubt this, consider that we don't have any info on the obfuscated seedph
 
 As an example, adding twenty times the password "abcde" probably provides even more security than carefully choosing two very good 24 characters passwords. 
 
-3. Passwords
+## 3. Passwords
 In the end, the level of security this program will bring you is directly depending on the strength of your passwords. Using very generic short passwords like "password" or "hello1" etc that can be found in dictionaries or passwords listing is not going to be of any help. The only easy way of breaking this obfuscation is by running a huge compilation of generic passwords and you should make sure your password would never be found in there.
 
-What is a good password?
+### What is a good password?
 A good password is first of all not one word but several separated by unusual characters. Also, the words can be non traditional word, things you won't find in a dictionary and should definitly be with upper and lower case letters since they are not normally found with this way in dictionaries. Then, on top of that, adding very specific words or letters that tie the password to the thing you are protecting will help insure your password has never been used anywhere else. Lastly, dates, acronym, nicknames are a good addition.
 
 A password must never be shorter than 12 characters and ideally should never be shorter than 24 characters but then again, in our case, if you stack 3 or 4 passwords on top of each other, it doesn't really matter if they are 12 or 15 characters long, they will provide safety.
