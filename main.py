@@ -1,6 +1,5 @@
 import time
 import os
-import platform
 import utils
 from mnemonic import Mnemonic
 from seedphrase import Seedphrase
@@ -91,11 +90,7 @@ def main():
         print("")
         state = input("\n-> ")
         match state:
-            #case "":
-                #state = input("")
-            #case "K" | "k":
-                #state = private_key(session)
-            case "O" | "o":
+           case "O" | "o":
                 state = obfuscator(session)
             case "help" | "h" | "-h":
                 show_help()
@@ -132,13 +127,10 @@ def collect_seedphrase(session):
         word = input(f"-> {i}: ")
         if " " in word:
             print(f"Invalid input - can't have space in a seedphrase word. Input: \"{word}\"")
-            #time.sleep(1)
         elif word == "" and len(seedphrase_list) == 0:
             print("Please enter the first word of your seedphrase")
-            #time.sleep(1)
         elif word == "" and len(seedphrase_list) > 0:
             print(print_seedphrase(seedphrase_list))
-            #time.sleep(1)
             collecting = False
         else :
             if word in session.mnemonic.list:
@@ -256,7 +248,6 @@ def set_password(session):
 
 def output_info(session):
     text = format_string_to_fit("Obfuscate:\n By choosing this action, your seedphrase will be obfuscated using the mnemonic and password(s). You will find a text file with the resulting obfuscated seedphrase as well as indications on your passwords in the \"Output\" directory. The name of the file is the sha256 hash of the original seedphrase so you can easily see if you have obfuscated the same seedphrase twice by mistake. You should tune up this file, add personal hints about the passwords that only you can understand so you will for sure be able to retrieve your seedphrase.\n\nDesobfuscate:\n By choosing this action, your seedphrase will be desobfuscated using the mnemonic and password(s). The outcome will only be displayed on this screen and not saved anywhere. It is up to you to write it down to use it later on. Remember to keep your desobfuscated seedphrase safe.\n\nPress Enter to close this info box, \"b\" to leave the obfuscator and return to the main menu, \"q\" to quit the program.", UserInterface.width)
-    #TODO: only accept q or b and return empty in any other case, generalize this
     output = input(f"{text}\n\n-> ")
     return output
 
@@ -420,7 +411,7 @@ def obfuscator(session):
         print("Running without automated test is not safe\n\n".center(UserInterface.width))
         print("Reclone from github for safety.\n\n\n\n\n".center(UserInterface.width))
         raise Exception("DO NOT PROCEED!!!")
-    if not Mnemonic.check_hash_of_default_mnemonic(platform.system()) == True:
+    if not Mnemonic.check_hash_of_default_mnemonic() == True:
         os.system('cls' if os.name == 'nt' else 'clear')
         print("\n\n\n\n\n")
         print("Automated system verification test cannot start !\n\n".center(UserInterface.width))
