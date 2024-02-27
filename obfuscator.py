@@ -1,6 +1,4 @@
-from password import Password
 from seedphrase import Seedphrase
-from mnemonic import Mnemonic
 
 class Obfuscator:
     def __init__(self,mnemonic, seedphrase_size, password_list):

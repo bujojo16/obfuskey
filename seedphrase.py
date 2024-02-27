@@ -1,6 +1,3 @@
-from password import Password
-from output import Output
-
 class Seedphrase:
     def __init__(self, phrase):
         self.size = len(phrase)

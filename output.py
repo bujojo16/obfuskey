@@ -1,7 +1,6 @@
 import hashlib
 import os
 import utils
-import random
 
 class Output:
     directory_path = "output"
