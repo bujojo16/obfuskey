@@ -2,6 +2,8 @@
 
 In short, a cryptocurrency wallet seedphrase reversible, offline, trustless, password based obfuscation to end the paper-seedphrase nonsense. Keep your seed-phrase protected and accessible anywhere, on computers and in paper without the need to hide it.
 
+![alt text](https://github.com/bujojo16/documents/blob/main/obfuscator_output.png)
+
 ## Table of content
 1. How to use  
 1.1 Prerequirements  
