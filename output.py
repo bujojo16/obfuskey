@@ -32,7 +32,11 @@ class Output:
     def write_output_to_file(output_file_path, password_list, seedphrase, version):
         display_password = ""
         i = 1
-        for password in password_list: #TODO: use randrange(6) or something
+        for password in password_list: #TODO: maybe randomie which character to display?
+            if len(password) > 2:
+                visible_character = password.password[2]
+            else:
+                visible_character = "*"
             display_password += f"\t{i}.: **{password.password[2]}**************************\n"
             i +=1
         f = open(output_file_path, 'w')
