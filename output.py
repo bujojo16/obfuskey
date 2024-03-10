@@ -33,7 +33,7 @@ class Output:
         display_password = ""
         i = 1
         for password in password_list: #TODO: maybe randomie which character to display?
-            if len(password) > 2:
+            if len(password.password) > 2:
                 visible_character = password.password[2]
             else:
                 visible_character = "*"
