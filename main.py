@@ -9,9 +9,10 @@ from obfuscator import Obfuscator
 
 class UserInterface:
     width = 88
-    version = "1.0"
-    def __init__(self):
-        self.text_length = 88
+    version = "2.0"
+    def __init__(self, text_length = width, version = version):
+        self.text_length = text_length
+        self.version = version
         self.options = {}
         self.levels = []
         self.texts = {
@@ -23,10 +24,10 @@ class UserInterface:
                 'output-setter': "\n\nYou can now choose which action you wish to perform:\n\n\t[I] Info \t[O] Obfuscate\t[D] Desobfuscate\t[B] Back\t[Q] Quit"
                 }
         self.headers = {
-                'main': f"ObfusKey v{UserInterface.version}",
+                'main': f"ObfusKey v1.0",
                 'privatekey': "Private Key Generator",
-                'obfuscator': "Seedphrase Obfuscator",
-                'mnemonic-setter': "Obfuscator - Set Mnemonic",
+                'obfuscator': f"Seedphrase Obfuscator",
+                'mnemonic-setter': f"Obfuscator - Set Mnemonic",
                 'seedphrase-setter': "Obfuscator - Set Seedphrase",
                 'password-setter': "Obfuscator - Set Password",
                 'output-setter': "Obfuscator - Set Output",
@@ -60,7 +61,7 @@ def get_current_level(session):
 def print_header(session):
     header_line = "----------------------------------------------------------------------------------------"
     level = get_current_level(session)
-    header = session.headers[level]
+    header = session.headers[level] + f" - v{session.version}"
     print(header_line + "\n" + header.rjust(44 + int(len(header)/2)) + "\n" + header_line)
 
 def print_text(session):
@@ -84,6 +85,7 @@ def main():
     session.levels.append("main")
     state = ""
     while not state in ["exit", "q"] :
+        session.version = UserInterface.version
         os.system('cls' if os.name == 'nt' else 'clear')
         print_header(session)
         print_text(session)
@@ -253,7 +255,7 @@ def output_info(session):
 
 def output(session):
     session.levels.append("output-setter")
-    session.obfuscator = Obfuscator(session.mnemonic, session.seedphrase.size, session.password_list)
+    session.obfuscator = Obfuscator(session.mnemonic, session.seedphrase.size, session.password_list, session.version[0])
     state = ""
     while not state in ["exit", "q", "back_5", "b"]:
         os.system('cls' if os.name == 'nt' else 'clear')
@@ -397,10 +399,31 @@ def obfuscator_info(session):
     text = format_string_to_fit("This program is going to ask you three things:\n  - The mnemonic from which your seedphrase is made (usually BIP39).\n  - Your private key under the form of a seedphrase.\n  - One or more password(s) to calculate your obfuscated seedphrase. \n\nYou will then have to choose do you want to obfuscate it or desobfuscate it. \nObfuscating it will output a text file (named by hashing your original seedphrase to help avoiding processing the same seed twice) where you will find your obfuscated seedphrase as well as one character from each password. \n\nYou can freely modify this text file but keeping the number of hints on your passwords minimum is crucial for security. \n\nDesobfuscating will display your original seedphrase on the screen only and not save it to any text file for security reason. \n\nPress Enter to close this info box, \"b\" to leave the obfuscator and return to the main menu, \"q\" to quit the program.", UserInterface.width)
     output = input(f"{text}\n\n-> ")
     return output
-    
+
+def select_version(session):
+    print(format_string_to_fit(f"\n\nYou can choose which version you wish to use. The default is latest version, v{UserInterface.version} and it is recomended to use it. \n\nPlease choose which version to use between version 1.0 and 2.0. Note that version 1.0 is considered deprecated but will always be available. If your obfuscation was performed using version 1.0, it is recommended to reobfuscate with version 2.0.\n\n\t\t [1] Version 1.0 \t\t [2] Version 2.0", UserInterface.width))
+    version = ""
+    while version not in ["1.0", "2.0"]:
+        version = input("\n\n-> ")
+        match version:
+            case "1":
+                version = "1.0"
+            case "2":
+                version = "2.0"
+            case "q" | "Q":
+                return 1
+            case "b" | "B":
+                return "back_1"
+            case _:
+                print("Invalid input - ignoring")
+                time.sleep(1/2)
+    session.version = version
+    return
 
 def obfuscator(session):
     session.levels.append("obfuscator")
+#TODO: test for both v1 and v2
+#TODO: make functions for clarity
 # Automated test running every time we enter the obfuscator to verify the program is still valid and running normally
     if Mnemonic.check_default_mnemonic_exists() == False:
         os.system('cls' if os.name == 'nt' else 'clear')
@@ -447,8 +470,10 @@ def obfuscator(session):
         print("Reclone from github for safety.\n\n\n\n\n".center(UserInterface.width))
         raise Exception("DO NOT PROCEED!!!")
 #End of testing
+    select_version(session)
     state = ""
     while not state in ["exit", "q", "back_1", "b"]:
+#        session.version = UserInterface.version         #We always redefault to latest version when coming back through the menu
         os.system('cls' if os.name == 'nt' else 'clear')
         print_header(session)
         print_text(session)
