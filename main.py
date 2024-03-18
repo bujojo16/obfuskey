@@ -301,7 +301,7 @@ def output(session):
                                     writing_to_output = False
                         elif file_already_exists[0] == False:
                             writing_to_output = False #writing was successful so we don't have to keep trying  
-                            file_writing = Output.create_output_file_and_write_output(session.seedphrase, session.password_list, version = UserInterface.version)
+                            file_writing = Output.create_output_file_and_write_output(session.seedphrase, session.password_list, version = session.version)
                             saved_to_file = file_writing['success']
                             print(str(file_writing).center(UserInterface.width)) 
                     if saved_to_file:
