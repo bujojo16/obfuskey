@@ -10,6 +10,7 @@ from obfuscator import Obfuscator
 class UserInterface:
     width = 88
     version = "2.0"
+
     def __init__(self, text_length = width, version = version):
         self.text_length = text_length
         self.version = version
@@ -34,6 +35,70 @@ class UserInterface:
 
                 }
 
+    def run_check_default_mnemonic_exists_test():
+        if Mnemonic.check_default_mnemonic_exists() == False:
+            os.system('cls' if os.name == 'nt' else 'clear')
+            print("\n\n\n\n\n")
+            print("Automated system verification test cannot start !\n\n".center(UserInterface.width))
+            print(format_string_to_fit("Default BIP39-english.txt mnemonic is not anymore located in Mnemonics directory, please kindly move it back there and restart the program so it can self-evaluate.", UserInterface.width))
+            print("\n\n\n")
+            print("Running without automated test is not safe\n\n".center(UserInterface.width))
+            print("Reclone from github for safety.\n\n\n\n\n".center(UserInterface.width))
+            raise Exception("DO NOT PROCEED!!!")
+
+    def run_check_hash_of_default_mnemonic_test():
+        if not Mnemonic.check_hash_of_default_mnemonic() == True:
+            os.system('cls' if os.name == 'nt' else 'clear')
+            print("\n\n\n\n\n")
+            print("Automated system verification test cannot start !\n\n".center(UserInterface.width))
+            print(format_string_to_fit("Default BIP39-english.txt mnemonic has been altered and is not anymore matching its original sha256 hash. Please, kindly restore it and restart the program so it can self-evaluate.", UserInterface.width))
+            print("\n\n\n")
+            print("Running without automated test is not safe\n\n".center(UserInterface.width))
+            print("Reclone from github for safety.\n\n\n\n\n".center(UserInterface.width))
+            raise Exception("DO NOT PROCEED!!!")
+
+    def run_v1_obfuscation_test():
+        test_obfuscator = Obfuscator(Mnemonic(), 24, [Password("abcdefghijkl"), Password("MNOPQRSTUVWX")])
+        test_seedphrase = []
+        for i in range(24):
+            test_seedphrase.append("test")
+        test_seed = Seedphrase(test_seedphrase)
+        expected_obfuscation = ['twenty', 'trip', 'soul', 'wheel', 'sketch', 'hundred', 'useful', 'father', 'sponsor', 'guard', 'chapter', 'prefer', 'garlic', 'kid', 'erase', 'purity', 'wide', 'skull', 'reopen', 'enact', 'decline', 'treat', 'correct', 'gesture']
+        if test_obfuscator.perform_obfuscation(test_seed)['success'] == True and not test_seed.obfuscated_phrase == expected_obfuscation:
+            os.system('cls' if os.name == 'nt' else 'clear')
+            print("\n\n\n\n")
+            print("Automated verification test ended in error:\n\n".center(UserInterface.width))
+            print("Predefined seed didn't return expected obfuscation\n\n".center(UserInterface.width))
+            print(format_string_to_fit("Automated verification test didn't succeed. If the BIP39-english.txt mnemonic has been modified or is not anymore correct, please kindly restore the original one and restart the program so it can self-evaluate. If the default mnemonic is in local \"Mnemonics\" directory, the code is corrupted and shouldn't be used", UserInterface.width))
+            print("\n\n\n\n")
+            print("Running without automated test is not safe\n\n".center(UserInterface.width))
+            print("Reclone from github for safety.\n\n\n\n\n".center(UserInterface.width))
+            raise Exception("DO NOT PROCEED!!!")
+     
+
+    def run_v2_obfuscation_test():
+        test_obfuscator = Obfuscator(Mnemonic(), 12, [Password("abcdefghijklmno"), Password("JKLMNOPQRSTUVWXYZ")])
+        test_seedphrase = []
+        for i in range(12):
+            test_seedphrase.append("test")
+        test_seed = Seedphrase(test_seedphrase)
+        expected_obfuscation = ['claw', 'buffalo', 'ahead', 'hybrid', 'betray', 'daring', 'brave', 'slow', 'hire', 'balance', 'pipe', 'adjust']
+        if test_obfuscator.perform_obfuscation(test_seed)['success'] == True and not test_seed.obfuscated_phrase == expected_obfuscation:
+            os.system('cls' if os.name == 'nt' else 'clear')
+            print("\n\n\n\n")
+            print("Automated verification test ended in error:\n\n".center(UserInterface.width))
+            print("Predefined seed didn't return expected obfuscation\n\n".center(UserInterface.width))
+            print(format_string_to_fit("Automated verification test didn't succeed. If the BIP39-english.txt mnemonic has been modified or is not anymore correct, please kindly restore the original one and restart the program so it can self-evaluate. If the default mnemonic is in local \"Mnemonics\" directory, the code is corrupted and shouldn't be used", UserInterface.width))
+            print("\n\n\n\n")
+            print("Running without automated test is not safe\n\n".center(UserInterface.width))
+            print("Reclone from github for safety.\n\n\n\n\n".center(UserInterface.width))
+            raise Exception("DO NOT PROCEED!!!")
+
+    tests = [run_check_default_mnemonic_exists_test,
+                     run_check_hash_of_default_mnemonic_test,
+                     run_v1_obfuscation_test,#]
+                     run_v2_obfuscation_test,]
+
 def format_string_to_fit(string, width):
     splitted = string.split(" ")
     result = ""
@@ -52,11 +117,7 @@ def format_string_to_fit(string, width):
     return result
 
 def get_current_level(session):
-    #TODO: Fix me - prolly useless check of length
-    if len(session.levels) > 1:
-        return session.levels[-1]
-    else:
-        return session.levels[0]
+    return session.levels[-1]
 
 def print_header(session):
     header_line = "----------------------------------------------------------------------------------------"
@@ -420,60 +481,16 @@ def select_version(session):
     session.version = version
     return
 
+def run_e2e_tests():
+    for test in UserInterface.tests:
+        test()
+
 def obfuscator(session):
     session.levels.append("obfuscator")
-#TODO: test for both v1 and v2
-#TODO: make functions for clarity
-# Automated test running every time we enter the obfuscator to verify the program is still valid and running normally
-    if Mnemonic.check_default_mnemonic_exists() == False:
-        os.system('cls' if os.name == 'nt' else 'clear')
-        print("\n\n\n\n\n")
-        print("Automated system verification test cannot start !\n\n".center(UserInterface.width))
-        print(format_string_to_fit("Default BIP39-english.txt mnemonic is not anymore located in Mnemonics directory, please kindly move it back there and restart the program so it can self-evaluate.", UserInterface.width))
-        print("\n\n\n")
-        print("Running without automated test is not safe\n\n".center(UserInterface.width))
-        print("Reclone from github for safety.\n\n\n\n\n".center(UserInterface.width))
-        raise Exception("DO NOT PROCEED!!!")
-    if not Mnemonic.check_hash_of_default_mnemonic() == True:
-        os.system('cls' if os.name == 'nt' else 'clear')
-        print("\n\n\n\n\n")
-        print("Automated system verification test cannot start !\n\n".center(UserInterface.width))
-        print(format_string_to_fit("Default BIP39-english.txt mnemonic has been altered and is not anymore matching its original sha256 hash. Please, kindly restore it and restart the program so it can self-evaluate.", UserInterface.width))
-        print("\n\n\n")
-        print("Running without automated test is not safe\n\n".center(UserInterface.width))
-        print("Reclone from github for safety.\n\n\n\n\n".center(UserInterface.width))
-        raise Exception("DO NOT PROCEED!!!")
-    test_obfuscator = Obfuscator(Mnemonic(), 24, [Password("abcdefghijkl"), Password("MNOPQRSTUVWX")])
-    test_seedphrase = []
-    for i in range(24):
-        test_seedphrase.append("test")
-    test_seed = Seedphrase(test_seedphrase)
-    expected_obfuscation = ['twenty', 'trip', 'soul', 'wheel', 'sketch', 'hundred', 'useful', 'father', 'sponsor', 'guard', 'chapter', 'prefer', 'garlic', 'kid', 'erase', 'purity', 'wide', 'skull', 'reopen', 'enact', 'decline', 'treat', 'correct', 'gesture']
-    if test_obfuscator.perform_obfuscation(test_seed)['success'] == True and not test_seed.obfuscated_phrase == expected_obfuscation:
-        os.system('cls' if os.name == 'nt' else 'clear')
-        print("\n\n\n\n")
-        print("Automated verification test ended in error:\n\n".center(UserInterface.width))
-        print("Predefined seed didn't return expected obfuscation\n\n".center(UserInterface.width))
-        print(format_string_to_fit("Automated verification test didn't succeed. If the BIP39-english.txt mnemonic has been modified or is not anymore correct, please kindly restore the original one and restart the program so it can self-evaluate. If the default mnemonic is in local \"Mnemonics\" directory, the code is corrupted and shouldn't be used", UserInterface.width))
-        print("\n\n\n\n")
-        print("Running without automated test is not safe\n\n".center(UserInterface.width))
-        print("Reclone from github for safety.\n\n\n\n\n".center(UserInterface.width))
-        raise Exception("DO NOT PROCEED!!!")
-    if test_obfuscator.perform_obfuscation(test_seed)['success'] == False:
-        os.system('cls' if os.name == 'nt' else 'clear')
-        print("\n\n\n\n")
-        print("Automated verification test ended in error:\n\n".center(UserInterface.width))
-        print("Predefined seed desobfuscation didn't match original seed\n\n".center(UserInterface.width))
-        print(format_string_to_fit("This is most probably due to an alteration of the source code or tempering with the system's memory. Please kindly reclone from github for safety. If the problem persists, try on another machine for safety.", UserInterface.width))
-        print("\n\n\n\n")
-        print("Running without automated test is not safe\n\n".center(UserInterface.width))
-        print("Reclone from github for safety.\n\n\n\n\n".center(UserInterface.width))
-        raise Exception("DO NOT PROCEED!!!")
-#End of testing
+    run_e2e_tests()
     select_version(session)
     state = ""
     while not state in ["exit", "q", "back_1", "b"]:
-#        session.version = UserInterface.version         #We always redefault to latest version when coming back through the menu
         os.system('cls' if os.name == 'nt' else 'clear')
         print_header(session)
         print_text(session)
