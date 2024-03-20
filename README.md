@@ -104,6 +104,7 @@ In short: using three 24 character passwords that are not common words or passwo
 - calculate the values
 - calculate the checksum
 - compare to the ledger  
+  
 And this for every single possibilities of the potential 6.54^362. This number being so gigantic, it is easier - and more likely to succeed - to simply randomize every possible seedphrases in the mnemonic.
  
 ## 3. Passwords  
