@@ -2,7 +2,7 @@
 
 In short, a cryptocurrency wallet seedphrase reversible, offline, trustless, password based obfuscation to end the paper-seedphrase nonsense. Keep your seed-phrase protected and accessible anywhere, on computers and on paper without the need to hide it and without fear of somebody finding it.
 
-[COMMENT]: insert updated picture ![alt text](https://github.com/bujojo16/documents/blob/main/obfuscator_output.png)
+[TODO]: insert updated picture 
 
 The documentation here is short and meant for a quick read to get the basics of this program. For the long version, please refer to Obfuskey.md
 
@@ -103,7 +103,7 @@ But that's not it. Because every attemp will give you a seemingly valid seedphra
 In short: using three 24 character passwords that are not common words or passwords you already use for another thing will make it practically impossible to break both because of the amount of time it would take but also the amount of resources to :
 - calculate the values
 - calculate the checksum
-- compare to the ledger
+- compare to the ledger  
 And this for every single possibilities of the potential 6.54^362. This number being so gigantic, it is easier - and more likely to succeed - to simply randomize every possible seedphrases in the mnemonic.
  
 ## 3. Passwords  
@@ -121,7 +121,7 @@ As a general rule, you could say that a password must never be shorter than 12 c
 The result of the obfuscation being so strong in itself, it is very important to be sure you will remember or recover your password without having it written in full form anywhere. To help you with this, you should tune-up the resulting txt-file, adding hints and sentences about your password, pin-pointing in time so the future you can actually get it back. This should be taken in consideration when creating your password so that it truely has a meaning for yourself and yourself only.
   
 ### 4. Evolution
-Any change to the calculation algorithm will be added as a new version and every version will always be directly available within the program, without having to download an older version, for ease of use and security. For example, you can already choose between v1.0 and v2.0.
+Any change to the calculation algorithm will be added as a new version and every version will always be directly available within the program, without having to download an older version, for ease of use and security. For example, you can already choose between v1.0 and v2.0.  
 However, v1.0 is now considered deprecated and should not be used to obfuscate but rather to desobfucate your seedphrase if it was obfuscated using v1.0 and then reobfuscate it using v2.0.
  
 ### 5. Philantropy
