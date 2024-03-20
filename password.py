@@ -19,7 +19,18 @@ class Password:
 
         return
 
-    def calculate_offsetting_list(self, prime_divisor, seedphrase_length):
+    def calculate_offsetting_list_to_password_size(self, prime_divisor, seedphrase_length):
+        self.offsetList = []
+        #first we initialize our array with zeroes
+        for i in range(seedphrase_length):
+            self.offsetList.append(0)
+        #then we add our password offsets with an overflow
+        for i in range(len(self.password)):
+            self.offset = ord(self.password[i]) * (self.offset +1)
+            self.offsetList[i%seedphrase_length] = self.offsetList[i%seedphrase_length] + self.offset%prime_divisor
+        return
+
+    def calculate_offsetting_list_to_seed_size(self, prime_divisor, seedphrase_length):
         self.offsetList = []
         for i in range(seedphrase_length):
             self.offset = ord(self.password[i%len(self.password)]) * (self.offset +1)
