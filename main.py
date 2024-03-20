@@ -368,7 +368,7 @@ def output(session):
                     if saved_to_file:
                         confirming = True
                         while confirming:
-                            print(format_string_to_fit("A validation test on your obfuscated seedphrase returned your original seedphrase. The process is successful and the output test file has now been created.\n\n\n\t\t\t[B] Back \t\t[Q] Quit", UserInterface.width))
+                            print(format_string_to_fit("A validation test on your obfuscated seedphrase returned your original seedphrase. The process is successful and the output file has now been created in the subdirectory /Output/.\n\n\n\t\t\t[B] Back \t\t[Q] Quit", UserInterface.width))
                             state = input("\n-> ")
                             match state:
                                 case "Q" | "q":
