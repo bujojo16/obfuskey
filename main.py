@@ -10,31 +10,35 @@ from obfuscator import Obfuscator
 class UserInterface:
     width = 88
     version = "2.0"
-
+    texts = {
+        'main': "\n\nTo interact with this software, choose one of the actions listed by typing the letter located within the brackets [] in front of the action you want to perform and then press enter:\n\n\n \t\t[H] Help \t[O] Obfuscator \t\t[Q] Quit\n\n",
+        'obfuscator': "\n\nFor a clear description of the following steps, use [I]. To proceed forward and start choosing your mnemonic, use [P]. At any input, you can quit the program using [Q] or return to the previous menu using [B].\n\n\n  \t[I] Info\t[P] Proceed\t[B] Back\t[Q] Quit\n",
+        'mnemonic-setter': f"\n\nBelow is a list of the already available mnemonic files, located in the \"Mnemonics\" directory. Please, enter the number in front of the mnemonic's name to select it. \n\nIf the mnemonic you require is not in the list, feel free to add it in the directory and press Enter to update the files listing.\n\n\t\t[0..9] Select File\t[B] Back\t[Q] Quit \n\nCurrently listed files:\n",
+        'seedphrase-setter': "\n\nYou will now have to enter each word of your seedphrase, in the correct order, one by one and pressing Enter between every word. When the complete seedphrase has been entered, press Enter once again without typing anything to signal the end of the seedphrase. To start entering your seedphrase, use [P].\n\n If you made a mistake, press Enter and you will be able to restart the process from scratch.\n\n\n\t\t\t[P] Proceed\t[B] Back\t[Q] Quit\n",
+        'password-setter': "\n\nIn order to obfuscate your seedphrase in a reversible way, you have to set a password. The obfuscation quality and security is directly depending on the password's complexity and length.\n\nYou can use any Unicode character. A password shorter than 24 characters is not recommended. Also, in order to truely protect your seedphrase, doubling the obfuscation is recommended. You can of course add as many passwords as you wish.\n\nOnce you feel like you have enough passwords set, enter an empty password to go forward.\n\n\t[I] Info\t[C] Continue\t[B] Back\t[Q] Quit\n",
+        'output-setter': "\n\nYou can now choose which action you wish to perform:\n\n\t[I] Info \t[O] Obfuscate\t[D] Desobfuscate\t[B] Back\t[Q] Quit"
+    }
+    headers = {
+        'main': "ObfusKey v1.0",
+        'privatekey': "Private Key Generator",
+        'obfuscator': "Seedphrase Obfuscator",
+        'mnemonic-setter': "Obfuscator - Set Mnemonic",
+        'seedphrase-setter': "Obfuscator - Set Seedphrase",
+        'password-setter': "Obfuscator - Set Password",
+        'output-setter': "Obfuscator - Set Output",
+    }
+    infos = {
+        'obfuscator': "This program is going to ask you three things:\n  - The mnemonic from which your seedphrase is made (usually BIP39).\n  - Your private key under the form of a seedphrase.\n  - One or more password(s) to calculate your obfuscated seedphrase. \n\nYou will then have to choose do you want to obfuscate it or desobfuscate it. \nObfuscating it will output a text file (named by hashing your original seedphrase to help avoiding processing the same seed twice) where you will find your obfuscated seedphrase as well as one character from each password. \n\nYou can freely modify this text file but keeping the number of hints on your passwords minimum is crucial for security. \n\nDesobfuscating will display your original seedphrase on the screen only and not save it to any text file for security reason. \n\nPress Enter to close this info box, \"b\" to leave the obfuscator and return to the main menu, \"q\" to quit the program.",
+        'password': "The obfuscation process is using the characters in your password to offset the words of your seedphrase within the mnemonic. You can use any character from the Unicode standard so technically any character you can type here is valid. While one password is enough to decouple the obfuscated seedphrase from the original one, it doesn't provide a great brute-force resistance. Adding a second password on top significantly increases the brute-forcing resistance. In case you want to use only one password, it should be long (longer than 24 characters) and include multiple uncommon characters (,;:.-_?! etc..). On the other hand, doubling the passwords don't necessarily require both passwords to be very complicated and/or very different from one another to maintain good security. \n\nPress Enter to close this info box, \"b\" to leave the obfuscator and return to the main menu, \"q\" to quit the program.",
+        'output': "Obfuscate:\n By choosing this action, your seedphrase will be obfuscated using the mnemonic and password(s). You will find a text file with the resulting obfuscated seedphrase as well as indications on your passwords in the \"Output\" directory. The name of the file is the sha256 hash of the original seedphrase so you can easily see if you have obfuscated the same seedphrase twice by mistake. You should tune up this file, add personal hints about the passwords that only you can understand so you will for sure be able to retrieve your seedphrase.\n\nDesobfuscate:\n By choosing this action, your seedphrase will be desobfuscated using the mnemonic and password(s). The outcome will only be displayed on this screen and not saved anywhere. It is up to you to write it down to use it later on. Remember to keep your desobfuscated seedphrase safe.\n\nPress Enter to close this info box, \"b\" to leave the obfuscator and return to the main menu, \"q\" to quit the program.",
+    }
+        
     def __init__(self, text_length = width, version = version):
         self.text_length = text_length
         self.version = version
         self.options = {}
         self.levels = []
-        self.texts = {
-                'main': "\n\nTo interact with this software, choose one of the actions listed by typing the letter located within the brackets [] in front of the action you want to perform and then press enter:\n\n\n \t\t[H] Help \t[O] Obfuscator \t\t[Q] Quit\n\n",
-                'obfuscator': "\n\nFor a clear description of the following steps, use [I]. To proceed forward and start choosing your mnemonic, use [P]. At any input, you can quit the program using [Q] or return to the previous menu using [B].\n\n\n  \t[I] Info\t[P] Proceed\t[B] Back\t[Q] Quit\n",
-                'mnemonic-setter': f"\n\nBelow is a list of the already available mnemonic files, located in the \"Mnemonics\" directory. Please, enter the number in front of the mnemonic's name to select it. \n\nIf the mnemonic you require is not in the list, feel free to add it in the directory and press Enter to update the files listing.\n\n\t\t[0..9] Select File\t[B] Back\t[Q] Quit \n\nCurrently listed files:\n",
-                'seedphrase-setter': "\n\nYou will now have to enter each word of your seedphrase, in the correct order, one by one and pressing Enter between every word. When the complete seedphrase has been entered, press Enter once again without typing anything to signal the end of the seedphrase. To start entering your seedphrase, use [P].\n\n If you made a mistake, press Enter and you will be able to restart the process from scratch.\n\n\n\t\t\t[P] Proceed\t[B] Back\t[Q] Quit\n",
-                'password-setter': "\n\nIn order to obfuscate your seedphrase in a reversible way, you have to set a password. The obfuscation quality and security is directly depending on the password's complexity and length.\n\nYou can use any Unicode character. A password shorter than 24 characters is not recommended. Also, in order to truely protect your seedphrase, doubling the obfuscation is recommended. You can of course add as many passwords as you wish.\n\nOnce you feel like you have enough passwords set, enter an empty password to go forward.\n\n\t[I] Info\t[C] Continue\t[B] Back\t[Q] Quit\n",
-                'output-setter': "\n\nYou can now choose which action you wish to perform:\n\n\t[I] Info \t[O] Obfuscate\t[D] Desobfuscate\t[B] Back\t[Q] Quit"
-                }
-        self.headers = {
-                'main': f"ObfusKey v1.0",
-                'privatekey': "Private Key Generator",
-                'obfuscator': f"Seedphrase Obfuscator",
-                'mnemonic-setter': f"Obfuscator - Set Mnemonic",
-                'seedphrase-setter': "Obfuscator - Set Seedphrase",
-                'password-setter': "Obfuscator - Set Password",
-                'output-setter': "Obfuscator - Set Output",
-
-                }
-
+        
     def run_check_default_mnemonic_exists_test():
         if Mnemonic.check_default_mnemonic_exists() == False:
             os.system('cls' if os.name == 'nt' else 'clear')
@@ -122,12 +126,12 @@ def get_current_level(session):
 def print_header(session):
     header_line = "----------------------------------------------------------------------------------------"
     level = get_current_level(session)
-    header = session.headers[level] + f" - v{session.version}"
+    header = UserInterface.headers[level] + f" - v{session.version}"
     print(header_line + "\n" + header.rjust(44 + int(len(header)/2)) + "\n" + header_line)
 
 def print_text(session):
     level = get_current_level(session)
-    print(format_string_to_fit(session.texts[level], UserInterface.width))
+    print(format_string_to_fit(UserInterface.texts[level], UserInterface.width))
 
 def print_seedphrase(seedphrase):
     output = ""
@@ -271,7 +275,7 @@ def seedphrase(session):
     return state
 
 def password_info(session):
-    text = format_string_to_fit("The obfuscation process is using the characters in your password to offset the words of your seedphrase within the mnemonic. You can use any character from the Unicode standard so technically any character you can type here is valid. While one password is enough to decouple the obfuscated seedphrase from the original one, it doesn't provide a great brute-force resistance. Adding a second password on top significantly increases the brute-forcing resistance. In case you want to use only one password, it should be long (longer than 24 characters) and include multiple uncommon characters (,;:.-_?! etc..). On the other hand, doubling the passwords don't necessarily require both passwords to be very complicated and/or very different from one another to maintain good security. \n\nPress Enter to close this info box, \"b\" to leave the obfuscator and return to the main menu, \"q\" to quit the program.", UserInterface.width)
+    text = format_string_to_fit(UserInterface.infos['password'], UserInterface.width)
     output = input(f"{text}\n\n-> ")
     return output
 
@@ -310,7 +314,7 @@ def set_password(session):
                 confirm = input("\n-> ")
 
 def output_info(session):
-    text = format_string_to_fit("Obfuscate:\n By choosing this action, your seedphrase will be obfuscated using the mnemonic and password(s). You will find a text file with the resulting obfuscated seedphrase as well as indications on your passwords in the \"Output\" directory. The name of the file is the sha256 hash of the original seedphrase so you can easily see if you have obfuscated the same seedphrase twice by mistake. You should tune up this file, add personal hints about the passwords that only you can understand so you will for sure be able to retrieve your seedphrase.\n\nDesobfuscate:\n By choosing this action, your seedphrase will be desobfuscated using the mnemonic and password(s). The outcome will only be displayed on this screen and not saved anywhere. It is up to you to write it down to use it later on. Remember to keep your desobfuscated seedphrase safe.\n\nPress Enter to close this info box, \"b\" to leave the obfuscator and return to the main menu, \"q\" to quit the program.", UserInterface.width)
+    text = format_string_to_fit(UserInterface.infos['output'], UserInterface.width)
     output = input(f"{text}\n\n-> ")
     return output
 
@@ -457,7 +461,7 @@ def mnemonic(session):
     return state
 
 def obfuscator_info(session):
-    text = format_string_to_fit("This program is going to ask you three things:\n  - The mnemonic from which your seedphrase is made (usually BIP39).\n  - Your private key under the form of a seedphrase.\n  - One or more password(s) to calculate your obfuscated seedphrase. \n\nYou will then have to choose do you want to obfuscate it or desobfuscate it. \nObfuscating it will output a text file (named by hashing your original seedphrase to help avoiding processing the same seed twice) where you will find your obfuscated seedphrase as well as one character from each password. \n\nYou can freely modify this text file but keeping the number of hints on your passwords minimum is crucial for security. \n\nDesobfuscating will display your original seedphrase on the screen only and not save it to any text file for security reason. \n\nPress Enter to close this info box, \"b\" to leave the obfuscator and return to the main menu, \"q\" to quit the program.", UserInterface.width)
+    text = format_string_to_fit(UserInterface.infos['obfuscator'], UserInterface.width)
     output = input(f"{text}\n\n-> ")
     return output
 
