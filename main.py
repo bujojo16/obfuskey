@@ -100,7 +100,7 @@ class UserInterface:
 
     tests = [run_check_default_mnemonic_exists_test,
                      run_check_hash_of_default_mnemonic_test,
-                     run_v1_obfuscation_test,#]
+                     run_v1_obfuscation_test,
                      run_v2_obfuscation_test,]
 
 def format_string_to_fit(string, width):
