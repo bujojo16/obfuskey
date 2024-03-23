@@ -318,6 +318,15 @@ def output_info(session):
     output = input(f"{text}\n\n-> ")
     return output
 
+def get_file_name():
+    default_name = "obfuscation.txt"
+    name = input("\n\nPlease enter a name for the output file. Entering an empty string will default to \n\"obfuscation.txt.\". It is recommended to use the name of your wallet so you can\n find it later on.\n\n-> ")
+    if name == "":
+        name = default_name
+    elif len(name) < 4 or name[-1:-4].lower() != ".txt":
+            name += ".txt"
+    return name
+
 def output(session):
     session.levels.append("output-setter")
     session.obfuscator = Obfuscator(session.mnemonic, session.seedphrase.size, session.password_list, session.version[0])
@@ -342,6 +351,10 @@ def output(session):
                 input("Press Enter to continue")
                 state = ""
             case "O" | "o" :
+                output_file_name = get_file_name()
+                output_dir_path = utils.get_path(os.getcwd(), "output") 
+                utils.make_dirs_if_needed(output_dir_path)
+                output_file_path = utils.get_path(output_dir_path, output_file_name)
                 result = session.obfuscator.perform_obfuscation(session.seedphrase)
                 success = result['success']
                 saved_to_file = False
@@ -352,9 +365,9 @@ def output(session):
                     print(str(result).center(UserInterface.width))
                     writing_to_output = True
                     while writing_to_output:
-                        file_already_exists = Output.check_output_already_exists(session.seedphrase.original_seedphrase)
-                        if file_already_exists[0] == True:
-                            print(f"\nCannot create output file - {file_already_exists[1]}".center(UserInterface.width))
+                        file_already_exists = utils.check_file_exists(output_file_path)
+                        if file_already_exists == True:
+                            print(f"\nCannot create output file - file {output_file_name} already exists!".center(UserInterface.width))
                             confirm = input(f"\n\nPlease, remove file and use [R] to retry. \n\n\t[R] Retry\t\t [B] Back\t\t[Q] Quit\n\n-> ")
                             match confirm:
                                 case "R" | "r":
@@ -364,11 +377,11 @@ def output(session):
                                 case "b" | "back":
                                     state = "back_5"
                                     writing_to_output = False
-                        elif file_already_exists[0] == False:
-                            writing_to_output = False #writing was successful so we don't have to keep trying  
-                            file_writing = Output.create_output_file_and_write_output(session.seedphrase, session.password_list, version = session.version)
+                        elif file_already_exists == False:
+                            writing_to_output = False #writing will be succesful so we don't have to keep trying
+                            file_writing = Output.create_output_file_and_write_output(session.seedphrase, session.password_list, output_file_path, session.version)
                             saved_to_file = file_writing['success']
-                            print(str(file_writing).center(UserInterface.width)) 
+                            print(format_string_to_fit(str(file_writing), UserInterface.width)) 
                     if saved_to_file:
                         confirming = True
                         while confirming:
