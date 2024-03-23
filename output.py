@@ -27,7 +27,11 @@ class Output:
         return utils.get_file_path(Output.directory_path, Output.get_file_name(seedphrase))
 
     def get_file_name(seedphrase):
-        return hashlib.sha256((' '.join(seedphrase)).encode('utf-8')).hexdigest() + ".txt"
+        phrase_hash = hashlib.sha256((' '.join(seedphrase)).encode('utf-8')).hexdigest()
+        temp_value = phrase_hash
+        for word in seedphrase:
+            temp_value = hashlib.sha256((temp_value + word).encode('utf-8')).hexdigest()
+        return temp_value + ".txt"
 
     def write_output_to_file(output_file_path, password_list, seedphrase, version):
         display_password = ""
