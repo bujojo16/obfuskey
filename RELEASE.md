@@ -6,9 +6,9 @@
 
 ### v2.1
 Previously the output file name was the sha256 hash of the original seedphrase. This being an obvious weak-point since it is possible to retrieve the original seedphrase by fully offline bruteforcing the hash, it is now up to the user to define the output file name. The default is "obfuscation.txt".
-Changes made to files:
-    - main.py
-    - output.py
+Changes made to files:  
+    - main.py  
+    - output.py  
 
 ***
 
