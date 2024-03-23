@@ -16,3 +16,8 @@ Changes made to files:
 New version of the password offsets calculations algorithm now including an overflow to roll-over all the characters in the password if it is longer than the seedphrase.
 
 Previously there was a *a lot* of different passwords generating the same output because they only needed to have the same overall offset value and contain the same X-first characters, X being the length of the seedphrase. Now with the overflow, the amount of duplicates when running "rockyou" with a 12 word seedphrase is reduced to 1: <!insert duplicates>
+
+***
+
+### v1.0
+First version published.
