@@ -9,7 +9,7 @@ from obfuscator import Obfuscator
 
 class UserInterface:
     width = 88
-    version = "2.0"
+    version = "2.1"
     texts = {
         'main': "\n\nTo interact with this software, choose one of the actions listed by typing the letter located within the brackets [] in front of the action you want to perform and then press enter:\n\n\n \t\t[H] Help \t[O] Obfuscator \t\t[Q] Quit\n\n",
         'obfuscator': "\n\nFor a clear description of the following steps, use [I]. To proceed forward and start choosing your mnemonic, use [P]. At any input, you can quit the program using [Q] or return to the previous menu using [B].\n\n\n  \t[I] Info\t[P] Proceed\t[B] Back\t[Q] Quit\n",
@@ -30,7 +30,7 @@ class UserInterface:
     infos = {
         'obfuscator': "This program is going to ask you three things:\n  - The mnemonic from which your seedphrase is made (usually BIP39).\n  - Your private key under the form of a seedphrase.\n  - One or more password(s) to calculate your obfuscated seedphrase. \n\nYou will then have to choose do you want to obfuscate it or desobfuscate it. \nObfuscating it will output a text file (named by hashing your original seedphrase to help avoiding processing the same seed twice) where you will find your obfuscated seedphrase as well as one character from each password. \n\nYou can freely modify this text file but keeping the number of hints on your passwords minimum is crucial for security. \n\nDesobfuscating will display your original seedphrase on the screen only and not save it to any text file for security reason. \n\nPress Enter to close this info box, \"b\" to leave the obfuscator and return to the main menu, \"q\" to quit the program.",
         'password': "The obfuscation process is using the characters in your password to offset the words of your seedphrase within the mnemonic. You can use any character from the Unicode standard so technically any character you can type here is valid. While one password is enough to decouple the obfuscated seedphrase from the original one, it doesn't provide a great brute-force resistance. Adding a second password on top significantly increases the brute-forcing resistance. In case you want to use only one password, it should be long (longer than 24 characters) and include multiple uncommon characters (,;:.-_?! etc..). On the other hand, doubling the passwords don't necessarily require both passwords to be very complicated and/or very different from one another to maintain good security. \n\nPress Enter to close this info box, \"b\" to leave the obfuscator and return to the main menu, \"q\" to quit the program.",
-        'output': "Obfuscate:\n By choosing this action, your seedphrase will be obfuscated using the mnemonic and password(s). You will find a text file with the resulting obfuscated seedphrase as well as indications on your passwords in the \"Output\" directory. The name of the file is the sha256 hash of the original seedphrase so you can easily see if you have obfuscated the same seedphrase twice by mistake. You should tune up this file, add personal hints about the passwords that only you can understand so you will for sure be able to retrieve your seedphrase.\n\nDesobfuscate:\n By choosing this action, your seedphrase will be desobfuscated using the mnemonic and password(s). The outcome will only be displayed on this screen and not saved anywhere. It is up to you to write it down to use it later on. Remember to keep your desobfuscated seedphrase safe.\n\nPress Enter to close this info box, \"b\" to leave the obfuscator and return to the main menu, \"q\" to quit the program.",
+        'output': "Obfuscate:\n By choosing this action, your seedphrase will be obfuscated using the mnemonic and password(s). You will find a text file with the resulting obfuscated seedphrase as well as indications on your passwords in the \"Output\" directory. The name of the file is a recursive hashing of the original seedphrase over every word using the sha256 algorithm so you can easily see if you have obfuscated the same seedphrase twice by mistake. You should tune up this file, add personal hints about the passwords that only you can understand so you will for sure be able to retrieve your seedphrase.\n\nDesobfuscate:\n By choosing this action, your seedphrase will be desobfuscated using the mnemonic and password(s). The outcome will only be displayed on this screen and not saved anywhere. It is up to you to write it down to use it later on. Remember to keep your desobfuscated seedphrase safe.\n\nPress Enter to close this info box, \"b\" to leave the obfuscator and return to the main menu, \"q\" to quit the program.",
     }
         
     def __init__(self, text_length = width, version = version):
@@ -318,6 +318,15 @@ def output_info(session):
     output = input(f"{text}\n\n-> ")
     return output
 
+def get_file_name():
+    default_name = "obfuscation.txt"
+    name = input("\n\nPlease enter a name for the output file. Entering an empty string will default to \n\"obfuscation.txt.\". It is recommended to use the name of your wallet so you can\n find it later on.\n\n-> ")
+    if name in ["", ".txt"]:
+        name = default_name
+    elif len(name) < 5 or name[-4:].lower() != ".txt":
+            name += ".txt"
+    return name
+
 def output(session):
     session.levels.append("output-setter")
     session.obfuscator = Obfuscator(session.mnemonic, session.seedphrase.size, session.password_list, session.version[0])
@@ -342,6 +351,10 @@ def output(session):
                 input("Press Enter to continue")
                 state = ""
             case "O" | "o" :
+                output_file_name = get_file_name()
+                output_dir_path = utils.get_path(os.getcwd(), "output") 
+                utils.make_dirs_if_needed(output_dir_path)
+                output_file_path = utils.get_path(output_dir_path, output_file_name)
                 result = session.obfuscator.perform_obfuscation(session.seedphrase)
                 success = result['success']
                 saved_to_file = False
@@ -349,12 +362,12 @@ def output(session):
                     pause = input("Obfuscation unsuccessful - Press Enter to return".center(UserInterface.width))
                     state = "back_5"
                 elif success == True:
-                    print(str(result).center(UserInterface.width))
+                    print(format_string_to_fit(str(result), UserInterface.width))
                     writing_to_output = True
                     while writing_to_output:
-                        file_already_exists = Output.check_output_already_exists(session.seedphrase.original_seedphrase)
-                        if file_already_exists[0] == True:
-                            print(f"\nCannot create output file - {file_already_exists[1]}".center(UserInterface.width))
+                        file_already_exists = utils.check_file_exists(output_file_path)
+                        if file_already_exists == True:
+                            print(f"\nCannot create output file - file {output_file_name} already exists!".center(UserInterface.width))
                             confirm = input(f"\n\nPlease, remove file and use [R] to retry. \n\n\t[R] Retry\t\t [B] Back\t\t[Q] Quit\n\n-> ")
                             match confirm:
                                 case "R" | "r":
@@ -364,11 +377,11 @@ def output(session):
                                 case "b" | "back":
                                     state = "back_5"
                                     writing_to_output = False
-                        elif file_already_exists[0] == False:
-                            writing_to_output = False #writing was successful so we don't have to keep trying  
-                            file_writing = Output.create_output_file_and_write_output(session.seedphrase, session.password_list, version = session.version)
+                        elif file_already_exists == False:
+                            writing_to_output = False #writing will be succesful so we don't have to keep trying
+                            file_writing = Output.create_output_file_and_write_output(session.seedphrase, session.password_list, output_file_path, session.version)
                             saved_to_file = file_writing['success']
-                            print(str(file_writing).center(UserInterface.width)) 
+                            print(format_string_to_fit(str(file_writing), UserInterface.width)) 
                     if saved_to_file:
                         confirming = True
                         while confirming:
@@ -466,17 +479,17 @@ def obfuscator_info(session):
     return output
 
 def select_version(session):
-    print(format_string_to_fit(f"\n\nYou can choose which version you wish to use. The default is latest version, v{UserInterface.version} and it is recomended to use it. \n\nPlease choose which version to use between version 1.0 and 2.0. Note that version 1.0 is considered deprecated but will always be available. If your obfuscation was performed using version 1.0, it is recommended to reobfuscate with version 2.0.\n\n\t\t [1] Version 1.0 \t\t [2] Version 2.0", UserInterface.width))
+    print(format_string_to_fit(f"\n\nYou can choose which version you wish to use. The default is latest version, v{UserInterface.version} and it is recomended to use it. \n\nPlease choose which version to use between version 1.0 and {UserInterface.version}. Note that version 1.0 is considered deprecated but will always be available. If your obfuscation was performed using version 1.0, it is recommended to reobfuscate with version {UserInterface.version}.\n\n\t\t [1] Version 1.0 \t\t [2] Version {UserInterface.version}", UserInterface.width))
     version = ""
-    while version not in ["1.0", "2.0"]:
+    while version not in ["1.0", UserInterface.version]:
         version = input("\n\n-> ")
         match version:
             case "1":
                 version = "1.0"
             case "2":
-                version = "2.0"
+                version = UserInterface.version
             case "q" | "Q":
-                return 1
+                return "exit"
             case "b" | "B":
                 return "back_1"
             case _:
