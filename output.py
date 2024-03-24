@@ -19,7 +19,7 @@ class Output:
                 visible_character = password.password[2]
             else:
                 visible_character = "*"
-            display_password += f"\t{i}.: **{password.password[2]}**************************\n"
+            display_password += f"\t{i}.: **{visible_character}**************************\n"
             i +=1
         f = open(output_file_path, 'w')
         f.write(f"Passwords:\n {display_password}\n\nObfuscated seedphrase: {' '.join(seedphrase)}")

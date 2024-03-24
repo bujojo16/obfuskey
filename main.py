@@ -9,7 +9,7 @@ from obfuscator import Obfuscator
 
 class UserInterface:
     width = 88
-    version = "2.0"
+    version = "2.1"
     texts = {
         'main': "\n\nTo interact with this software, choose one of the actions listed by typing the letter located within the brackets [] in front of the action you want to perform and then press enter:\n\n\n \t\t[H] Help \t[O] Obfuscator \t\t[Q] Quit\n\n",
         'obfuscator': "\n\nFor a clear description of the following steps, use [I]. To proceed forward and start choosing your mnemonic, use [P]. At any input, you can quit the program using [Q] or return to the previous menu using [B].\n\n\n  \t[I] Info\t[P] Proceed\t[B] Back\t[Q] Quit\n",
@@ -321,9 +321,9 @@ def output_info(session):
 def get_file_name():
     default_name = "obfuscation.txt"
     name = input("\n\nPlease enter a name for the output file. Entering an empty string will default to \n\"obfuscation.txt.\". It is recommended to use the name of your wallet so you can\n find it later on.\n\n-> ")
-    if name == "":
+    if name in ["", ".txt"]:
         name = default_name
-    elif len(name) < 4 or name[-1:-4].lower() != ".txt":
+    elif len(name) < 5 or name[-4:].lower() != ".txt":
             name += ".txt"
     return name
 
@@ -362,7 +362,7 @@ def output(session):
                     pause = input("Obfuscation unsuccessful - Press Enter to return".center(UserInterface.width))
                     state = "back_5"
                 elif success == True:
-                    print(str(result).center(UserInterface.width))
+                    print(format_string_to_fit(str(result), UserInterface.width))
                     writing_to_output = True
                     while writing_to_output:
                         file_already_exists = utils.check_file_exists(output_file_path)
@@ -479,17 +479,17 @@ def obfuscator_info(session):
     return output
 
 def select_version(session):
-    print(format_string_to_fit(f"\n\nYou can choose which version you wish to use. The default is latest version, v{UserInterface.version} and it is recomended to use it. \n\nPlease choose which version to use between version 1.0 and 2.0. Note that version 1.0 is considered deprecated but will always be available. If your obfuscation was performed using version 1.0, it is recommended to reobfuscate with version 2.0.\n\n\t\t [1] Version 1.0 \t\t [2] Version 2.0", UserInterface.width))
+    print(format_string_to_fit(f"\n\nYou can choose which version you wish to use. The default is latest version, v{UserInterface.version} and it is recomended to use it. \n\nPlease choose which version to use between version 1.0 and {UserInterface.version}. Note that version 1.0 is considered deprecated but will always be available. If your obfuscation was performed using version 1.0, it is recommended to reobfuscate with version {UserInterface.version}.\n\n\t\t [1] Version 1.0 \t\t [2] Version {UserInterface.version}", UserInterface.width))
     version = ""
-    while version not in ["1.0", "2.0"]:
+    while version not in ["1.0", UserInterface.version]:
         version = input("\n\n-> ")
         match version:
             case "1":
                 version = "1.0"
             case "2":
-                version = "2.0"
+                version = UserInterface.version
             case "q" | "Q":
-                return 1
+                return "exit"
             case "b" | "B":
                 return "back_1"
             case _:
