@@ -19,7 +19,9 @@ or mapping finite sets with infinite sets
 
 ## 1. Background
 
-Before going deeper into the "hows", let's quickly go through the "whys". Using cryptocurrencies - *which could be summed-up as a very technologically advanced way of managing one's funds* - it felt really stupid to have to rely on a piece of paper to safely store the only way to recover a wallet, i.e. the seedphrase. It feels paradoxical that the only way to safely store it is on a piece of paper which can be:
+*Before going deeper into the "hows", let's quickly go through the "whys".*  
+  
+Using cryptocurrencies - *which could be summed-up as a very technologically advanced way of managing one's funds* - it felt really stupid to have to rely on a piece of paper to safely store the only way to recover a wallet, i.e. the seedphrase. It feels paradoxical that the only way to safely store it is on a piece of paper which can be:
     - found by anybody else than you, meaning loss of control over your wallet
     - damaged/destroyed by environmental events (would it be fire, water, earthquake ...?)
 You can of course try to mitigate the second point by using a different media than paper, some might even use metal, but it doesn't help with the first point: if anyone else than you finds your media, they get your keys, your cryptos.
@@ -27,32 +29,45 @@ You can of course try to mitigate the second point by using a different media th
 Lets quickly state here that I am aware of the existence of passphrase-protected seedphrases but this doesn't solve the problem since you still should never have your seedphrase exposed to the world even if it is protected by a passphrase.
 
 You can of course opt for a digital storage, which is a terrible idea for the following reasons:
+  
 1. Accessibility
 If it is digital, it can be remotely:
     - opened without leaving a trace
     - copied without leaving a trace
     - modified
     - deleted
-You can mitigate the first 3 by password protecting it but it won't help you if it is deleted.
+You can mitigate the first 3 by password protecting it but it won't help you if it is deleted. Also, if it is locally password-protected, it can be brute-forced. If it is remotely password protected (using 2FA and such) you can always get hacked/sim-swapped etc.
+  
 2. Digitality
-Because it is under the digital form, if anything happens you can't have a physical copy of it. You can't print a password-protected zip. I mean, you could print out every byte of the file but typing it back will be quite something. And if you print it out as plain text you are back to square one with a piece of paper that anyone can find or destroy.
+Because it is under the digital form, if anything happens you can't have a physical copy of it. You can't print a password-protected zip. I mean, you could print out every byte of the file but typing it back will be quite something. And if you print it out as plain text you are back to square one with a piece of paper that anyone can find and can be destroyed.
+  
 3. Storage
 If you rely on a text file inside of a zip file stored on a cloud service, you have to trust the cloud service to be there for ever and never lose your file. This should be seen as a third-party trust-based storage.
+  
 4. Security
 Trying to break a password encryption is only a matter of computing power and can be performed fully offline. If the password is not found in usual password-listings, the attacker would have to run all possible character combinations. While it is not fast, the attacker will know they have broken the encryption because the text will be readable/the hash will match.
-
+  
 The main take-out is that to be perfectly safe you would need to have it both on a physical media AND under a digital form BUT without having to rely on any third party for the storage and protection of the file WHILE keeping the physical copy not readable.
 
-The obvious solution to this problem is obfuscation. Rendering the seedphrase useless but still having it under the form of mnemonic words so it is easy to write down on a physical media if needed as well as under a digital form.
-
+The obvious solution to this problem is obfuscation for the following reasons:
+- once obfuscated, it is useless unless you have the way to desobfuscate it so you can keep it digitally
+- because it is an obfuscation within the mnemonic, it is still under the form of a seedphrase so it is easy to type, easy to print out so you can keep it physically
+- but because it is under the form of a mnemonic phrase, it also means you can't just brute-force it back because you won't know if you successfuly broke it. This will get clearer further down the document.
+- if you use a passphrase-protected seedphrase, obfuscating your seedphrase makes it theoretically impossible to break without the password(s)
+  
 ## 2. Obfuscation
 
 Before going forward, let's define some words:
     - Seedphrase: a list of words in a specific order which grants access to a wallet
-    - Mnemonic: the listing of all possible words used to create the seedphrase. By default we will be talking about BIP39-english.
-    - Index: the position of an item in a list, for example a seedphrase in a word is just an index in the mnemonic (the index of the word "test" is 1789)
-    - Offset: the distance within the mnemonic between the original seedphrase's word and the obfuscated one.
-    - Seedphrase form: the shape of the seedphrase. This can be seen as the fingerprint of your seedphrase. Since your seedphrase is not a list of words but actually a list of indexes, it can be plotted in a 2D space with the index in the list as x-axis and the index of the word in the mnemonic as the y-axis.
+    - Mnemonic: the listing of all possible words used to create the seedphrase. By default we will be talking about BIP39-english which contains 2048 unique words.
+    - Index: Usually the position of an item in a list. Because the words in a seedphrase are taken from the mnemonic, every word has a unique index in the mnemonic meaning every word can be seen as an index in the mnemonic. Therefore:
+```python
+"test test test test" == [1789, 1789, 1789, 1789]
+```
+1789 being the index of the word "test" in the BIP39-english mnemonic.
+    - Offset: considering a seedphrase and its obfuscated version, the offset is the numerical distance between the indexes at the same position in the two seedphrases.
+    - The shape of a seedphrase: This can be seen as the fingerprint of your seedphrase. Since your seedphrase is not a list of words but actually a list of indexes, it can be plotted in a 2D space with the index in the list as x-axis and the index of the word in the mnemonic as the y-axis.
+![alt text](24_words_seedphrase.png "Shape of a 24 words seedphrase")
     - seedphrase word-gap: the distance between consecutive indexes within the mnemonic. For example, considering the phrase:
 ```python
 phrase = ['test', 'test']
@@ -60,7 +75,9 @@ phrase == [1789, 1789]
 ```
     the word-gap is 0.
 
-With this obfuscation, we simply re-index every word of the seedphrase into the mnemonic without keeping its original form (non conservation of word-gaps) by using one or more - but preferably more - password(s). The output is a completely new seedphrase that has no other link to your original seedphrase than the passwords you have set and can only be retrieved by desobfuscating it using this same obfuscation algorithm in reverse.
+With this obfuscation, we simply re-index every word of the seedphrase into the mnemonic without keeping its original shape (non conservation of word-gaps) by using one or more - but preferably more - password(s). The output is a completely new seedphrase that has no other link to your original seedphrase than the passwords you have set and can only be retrieved by desobfuscating it using this same obfuscation algorithm in reverse.
+
+
 
 ## 3. Offsets calculation
 
