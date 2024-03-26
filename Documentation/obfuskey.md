@@ -58,22 +58,22 @@ The obvious solution to this problem is obfuscation for the following reasons:
 ## 2. Obfuscation
 
 Before going forward, let's define some words:
-    - Seedphrase: a list of words in a specific order which grants access to a wallet
-    - Mnemonic: the listing of all possible words used to create the seedphrase. By default we will be talking about BIP39-english which contains 2048 unique words.
-    - Index: Usually the position of an item in a list. Because the words in a seedphrase are taken from the mnemonic, every word has a unique index in the mnemonic meaning every word can be seen as an index in the mnemonic. Therefore:
+- Seedphrase: a list of words in a specific order which grants access to a wallet
+- Mnemonic: the listing of all possible words used to create the seedphrase. By default we will be talking about BIP39-english which contains 2048 unique words.
+- Index: Usually the position of an item in a list. Because the words in a seedphrase are taken from the mnemonic, every word has a unique index in the mnemonic meaning every word can be seen as an index in the mnemonic. Therefore:
 ```python
 "test test test test" == [1789, 1789, 1789, 1789]
 ```
-1789 being the index of the word "test" in the BIP39-english mnemonic.
-    - Offset: considering a seedphrase and its obfuscated version, the offset is the numerical distance between the indexes at the same position in the two seedphrases.
-    - The shape of a seedphrase: This can be seen as the fingerprint of your seedphrase. Since your seedphrase is not a list of words but actually a list of indexes, it can be plotted in a 2D space with the index in the list as x-axis and the index of the word in the mnemonic as the y-axis.
+1789 being the index of the word "test" in the BIP39-english mnemonic.    
+- Offset: considering a seedphrase and its obfuscated version, the offset is the numerical distance between the indexes at the same position in the two seedphrases.
+- The shape of a seedphrase: This can be seen as the fingerprint of your seedphrase. Since your seedphrase is not a list of words but actually a list of indexes, it can be plotted in a 2D space with the index in the list as x-axis and the index of the word in the mnemonic as the y-axis.
 ![alt text](24_words_seedphrase.png "Shape of a 24 words seedphrase")
-    - seedphrase word-gap: the distance between consecutive indexes within the mnemonic. For example, considering the phrase:
+- seedphrase word-gap: the distance between consecutive indexes within the mnemonic. For example, considering the phrase:
 ```python
 phrase = ['test', 'test']
 phrase == [1789, 1789]
 ```
-    the word-gap is 0.
+the word-gap is 0.
 
 With this obfuscation, we simply re-index every word of the seedphrase into the mnemonic without keeping its original shape (non conservation of word-gaps) by using one or more - but preferably more - password(s). The output is a completely new seedphrase that has no other link to your original seedphrase than the passwords you have set and can only be retrieved by desobfuscating it using this same obfuscation algorithm in reverse.
 
