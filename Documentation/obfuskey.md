@@ -96,11 +96,16 @@ later seek glory method husband shadow clerk pole latin labor vague what green h
 ```
 As you can easily see, the non conservation of word gaps is clear. In this case I used 2 very complicated passwords but you actually don't need a complicated password to decorelate the obfuscated seed. As you can see in the example below, we have obfuscated the same "test" seedphrase using only "A" as the password:
 ![alt text](24_test_obf_A.png "24 times the word test obfuscated using A")
-and the obfuscated seedphrase is: "air lend mandate female pepper good morning nest scene topic erode long liquid camp humble decade indicate desk ethics smooth always annual local gift"
+and the obfuscated seedphrase is: 
+```python
+"air lend mandate female pepper good morning nest scene topic erode long liquid camp humble decade indicate desk ethics smooth always annual local gift"
+```
 And to prove the seemingly randomness of the offsets, here is the same 24 test obfuscated using "a" as the password:
-![alt text](24_test_obf_a.pgn "24 times the word test obfuscated using a")
-which resulted in the obfuscated seedphrase: "bind over three large lesson roast today fine yard rose dust absent image adapt finish blade toward genius spread volcano emotion region huge agree"
-  
+![alt text](24_test_obf_a.png "24 times the word test obfuscated using a")
+which resulted in the obfuscated seedphrase: 
+```python
+"bind over three large lesson roast today fine yard rose dust absent image adapt finish blade toward genius spread volcano emotion region huge agree"
+```
 In order to understand a bit more what happens during the obfuscation, we need to look at the offset calculation, which is the following chapter.
   
 ## 3. Offsets calculation
