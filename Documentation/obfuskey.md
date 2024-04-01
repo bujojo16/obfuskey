@@ -167,7 +167,7 @@ Because we are accepting any Unicode input as a password to generate a list of w
 This obviously means that we will have more than one password generating the same list of offsets, therefore the same list of words. Before adding the overflow (v1.0) these duplicates were very common and defined as follow:
 Given two passwords X and Y of different lengths, if:
 ```python
- X.offset == Y.offset mod prime\_divisor
+ X.offset == Y.offset mod prime_divisor
 ```
 and 
 ```python
@@ -208,7 +208,7 @@ Secondly, the main problem with an encryption of your seedphrase is that brute-f
 
 When obfuscating, every outcome is in fact a seemingly valid outcome (in case of a private key, would be able to check if he got a really valid key by verifying the checksum) but it doesn't mean it is the valid outcome the attacker is looking for. Because of this, every result must be compared with the blockchain in order to know if the obfuscation has been broken. This added to the fact that there will be duplicated outcomes mean a proper attack requires a lot more computing power and resources than simply randomly generating seedphrases, without having any more chance of success.
 
-But what if the password you use is in a listing ? Well, that is not a problem really.
+But what if the password you use is in a listing ? Well, thanks to layering, this is not a problem really.
 
 ### 2. Layering
 
@@ -216,9 +216,9 @@ So far we have seen that using one password can efficiently generate a completel
 
 You can choose to use only one very long and very complicated password but eventually, it could end-up in a password listing and that would be it. So what should you do ? Add more passwords.
 
-When performing the obfuscation using the program, you will be asked to add as many passwords as you wish. These passwords will be used to generate an obfuscated seedphrase and the next password will obfuscate the obfuscated seedphrase and none of the "in between" obfuscated seedphrases are saved, only the last one. By doing so, you are effectively squaring your security. Let me explain.
+When performing the obfuscation using the program, you will be asked to add as many passwords as you wish. These passwords will be used to generate an obfuscated seedphrase and the next password will obfuscate the obfuscated seedphrase and none of the "in between" obfuscated seedphrases are saved, only the last one. By doing so, you are effectively exponentially improving security. Let me explain.
 
-If you use two passwords from the rockyou listing to protect your seedphrase, the attacker won't know when he broke one of the passwords meaning he will have to go through every possible password combination. Add a third password and you already have 2,7^21 possible outcome. Now this is only playing with the 14 millions password within the rockyou listing.
+If you use two passwords from the rockyou listing to protect your seedphrase, the attacker won't know when he broke one of the passwords meaning he will have to go through every possible password combination. Add a third password and you already have 2,7^21 possible outcome. Now this is only considering you would use three passwords from the rockyou listing (so out of 14 millions possibilities) but actually you will use passwords not in the listing and depending on the length of the passwords, the possibilities quickly grow towards infinity.
 
 In reality, because the attacker will not know the length of your passwords and will have only a small amount of hints regarding the passwords, the possibilities using 3 passwords are infinite. The attacker won't have any benefit of using this obfuscation to retrieve your original seedphrase than simply randomly generating seedphrases.
 
@@ -227,6 +227,8 @@ In case you are already using a passphrase protected seedphrase, if you obfuscat
 ## 5. Conclusion
 
 You were given an impersonal piece of data under the form of a phrase and asked to keep it secret, offline and safe in case you one day need it. By crafting yourself a couple of very personal passwords you can effectively protect it enough so that you don't have to keep it secret anymore.
+
+Because of the recursiveness of the algorithm, knowing some of the characters in the passwords are not giving away original seedphrase words therefore giving yourself hints is not compromising the global security.
 
 Given you use more than one password, trying to break it using every possible character combination amounts to *very big* numbers of possibilities, each  of them having to be compared to the blockahin.
 
