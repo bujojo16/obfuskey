@@ -61,11 +61,15 @@ The obvious solution to this problem is obfuscation for the following reasons:
 
 
 ### 2. Seedphrase and security
-  
-If you are using a seedphrase, you are already trading security for ease-of-use. One of the main point of the seedphrase is to be human-readable so that it is easier to write down and to store than if it would be the hexadecimal string representation of the wallet private key. The thing is, to get this comfort, you accept that your key is going to be taken from a predefined set of words. This means that someone with enough luck - or motivation - could open your wallet by just randomly entering words that are matching your seedphrase. Of course, the sheer amount of possibilities mean that someone targetting *your very own wallet* will most likely never succeed, but opening *any wallet* could be done by randomly entering seedphrases, theoretically.  
-  
-Now, I am not saying that this is unsafe, I am just pointing out the fact that there is an inherent "risk factor" to the seedphrase which is a trade-off for the user-experience.  
-  
+Let's say you want to protect your funds and still be able to use crypto in a user-friendly way, you might want to set multiple wallets, possibly some main wallets with 24 words seedphrase + passphrase to maximize security and then a couple of wallets with just a seedphrase because entering the passphrase in your hardware wallet everytime you want to use it might not be the safest/most practical in the end.
+
+
+In this case, your "lower security" wallet without passphrase are a trade-off between ease of use and security. Because you don't use a passphrase, in the end, it is solely protected by the odds of someone randomly entering a seedphrase ending up on your wallet. This means that someone with enough luck - or motivation - could open your wallet by just randomly entering words that are matching your seedphrase. Of course, the sheer amount of possibilities mean that someone targetting *your very own wallet* will most likely never succeed, but opening *any wallet* could be done by randomly entering seedphrases, theoretically. As you will see below, using this obfuscation is not making it any easier to attack your seedphrase. In fact, an attacker will have better odds of opening your wallet by just randomly generating wallets than trying to revert the obfuscated seedphrase because there are more possible outcome with the obfuscation (duplicates).
+
+
+If you are using multiple wallets you end up having multiple seedphrases that you have to protect equally and hiding them all around your house might feel a bit ridiculous after more than a couple. Using this obfuscation, you are getting rid of this problem since you don't need to hide anything at all. You can safely store your seedphrases in plain sight.  
+
+ 
 ## 2. Obfuscation
 
 Before going forward, let's define some words:
