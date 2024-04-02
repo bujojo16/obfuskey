@@ -2,8 +2,6 @@
 
 A cryptocurrency wallet seedphrase reversible, offline, trustless, password based obfuscation to end the paper-seedphrase nonsense.
 
-or mapping finite sets with infinite sets
-
 ***
 
 ## Summary
@@ -187,14 +185,21 @@ As you will see in the next chapter, the output of the offset generating algorit
 ### 3. Practical experiments
 
 First of all, let's go through the complete "rockyou" password list and analyze what offsets we are getting out of it.
-To do so, we run the full listing and generate 12 offsets (just as we would do to obfuscate a 12 word seedphrase) whatever the length of the password is. Then, we go through the outputs and we calculate how many times we got each of the mnemonic indexes.
+To do so, we run the full listing and generate 12 offsets (just as we would do to obfuscate a 12 word seedphrase) whatever the length of the password. Then, we go through the outputs and we lookup the occurrences of each of the mnemonic indexes.
+![alt text](rockyou_occurrences_12.png "Occurrences of indexes for 12 words seed using rockyou")
+As you can see on the graph above, we are getting the roughly the same amount of occurences for every indexes except for the first 5 (0, 1, 2, 3, 4), which have double the occurrences.. This is expected.
 
-As you can see on the graph above, we are getting the same amount of occurences for every indexes except for the first 5, which are double. This is expected.
-Because we are using the next prime number bigger than the mnemonic size (2053) in order to calculate our offsets and then we match it to our mnemonic (modulo 2048) the numbers above 2048 will overflow.
+Because we are using the next prime number bigger than the mnemonic size - which is 2053 for a mnemonic of size 2048 - in order to calculate our offsets and then we match it to our mnemonic (modulo 2048), our first number will be between 0 and 2053. Then, when we take it modulo 2048 it overflows, meaning the numbers above 2047 will give us numbers between 0 and 5. 
+
+Because of this distribution of our obfuscated indexes, the result of this obfuscation has no chance of transpiring our original seedphrase shape. This means that attacking the obfuscated seedphrase using random passwords doesn't bring the attacker any closer to your original seedphrase than just randomly generating seedphrases from the mnemonic. In fact, because we know we will have duplicates, it has a greater chance to be computationally more complex than just randomly generating seedphrases ***given the password used is not in password listing***. Using unique passwords specifically crafted for this will reduce the chance of it being found in a listing.
 
 In the end, out of the 14 million passwords in the listing, we have a 0.05% chance of getting any index between 5 and 2048 and 0.1% chance of getting any index between 0 and 4. This doubling of the probabilities for the overflowing indexes is perfectly acceptable as long as the probabilities are so evenly spread for the whole mnemonic.
 
-Because of this distribution of our obfuscated indexes, the result of this obfuscation has no chance of transpiring our original seedphrase shape. This means that attacking the obfuscated seedphrase using random passwords doesn't bring the attacker any closer to your original seedphrase than just randomly generating seedphrases from the mnemonic. In fact, because we know we will have duplicates, it has a greater chance to be computationally more complex than just randomly generating seedphrases ***given the password used is not in password listing***.
+Regarding the result of obfuscations, through the complete rockyou listing, we only have two passwords giving us the exact same obfuscated indexes:
+- "gjeegjee"
+- "gjee"
+
+Considering that rockyou contains an immense list of very similar passwords, often with only an ending character being different, this proves there will be more than one password producing the same obfuscation but because of the overflow, these will most likely happen with short, similar, possibly self-repeating passwords.
 
 ## 4. Security
 
@@ -208,7 +213,7 @@ Secondly, the main problem with an encryption of your seedphrase is that brute-f
 
 When obfuscating, every outcome is in fact a seemingly valid outcome (in case of a private key, would be able to check if he got a really valid key by verifying the checksum) but it doesn't mean it is the valid outcome the attacker is looking for. Because of this, every result must be compared with the blockchain in order to know if the obfuscation has been broken. This added to the fact that there will be duplicated outcomes mean a proper attack requires a lot more computing power and resources than simply randomly generating seedphrases, without having any more chance of success.
 
-But what if the password you use is in a listing ? Well, thanks to layering, this is not a problem really.
+But what if the password you use is in a listing ? Well, thanks to layering, which is our next topic, this is not a problem really. 
 
 ### 2. Layering
 
@@ -230,6 +235,6 @@ You were given an impersonal piece of data under the form of a phrase and asked 
 
 Because of the recursiveness of the algorithm, knowing some of the characters in the passwords are not giving away original seedphrase words therefore giving yourself hints is not compromising the global security.
 
-Given you use more than one password, trying to break it using every possible character combination amounts to *very big* numbers of possibilities, each  of them having to be compared to the blockahin.
+Given you use more than one password, trying to break it using every possible character combination amounts to *very big* numbers of possibilities, each of them having to be compared to the blockahin.
 
 Given you are using a passphrase, trying to break it is meaningless.
