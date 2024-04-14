@@ -1,0 +1,23 @@
+Passwords:
+ 	1.: **X************-A************
+	2.: **M********!#****************
+	3.: **L**************************
+
+1. usual password and date
+2. never going to let you down
+3. what she used to say to you
+
+Obfuscated seedphrase: love area intact force alien inmate east young twelve border auction twenty
+
+Generated using ObfusKey v2.1
+
+eth: 0xeE85b5bAF7613413b0297c2224587664a21aBe89
+ada: addr1q837ch57nrydv6t6kalhlnyfycsk0nxen3lga67zvccpvtlra30faxxg6e5h4dml0lxgjf3pvlxdn8r73m4uye3szchs6qvwkp
+sol: ARdpFUQGk37n1SM8pwhEVVEbF8NodYLpgYRqYS95fVrP
+doge: D7DcccWiaKoznywxsScTwsdXpSwuTPgD5G
+dot: 14saE3ECEAd6JzqRpitL3XDxMcxFKPbtnm297pYwD4vcGs8K
+matic: 0xeE85b5bAF7613413b0297c2224587664a21aBe89
+
+
+
+

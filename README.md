@@ -2,7 +2,8 @@
 
 In short, a cryptocurrency wallet seedphrase reversible, offline, trustless, password based obfuscation to end the paper-seedphrase nonsense. Keep your seed-phrase protected and accessible anywhere, on computers and on paper without the need to hide it and without fear of somebody finding it.
 
-[TODO]: insert updated picture 
+![alt text](Documentation/obfuscation_example.png "Output file from obfuscation after tuning it up with hints")  
+In the picture is an example of the output file you can get after adding hints regarding your passwords.
 
 The documentation here is short and meant for a quick read to get the basics of this program. For the long version, please refer to Obfuskey.md
 
@@ -132,10 +133,12 @@ It took quite some time and I plan on sticking around to update it and help if a
 If you feel like you would like to support this work, if this has helped you or if you simply want to give me a pat on the back, you can tip the project on these wallets:  
 ```bash
 BTC: bc1q2ht2ytw5sh05fzdq9zvsc7ehc7a3hwcx8ccw30?message=tips  
-DOGE: DKXmmjW3JrUxNhm6qhTXMqbzdqm9VJLMK3  
-ADA: addr1q903tkzsm8tghwk34584yzf9ytmym37qfmtlkqe0qjp64t6lzhv9pkwk3wadrtg02gyj2ghkfhruqnkhlvpj7pyr42hs408mv4  
-ETH: 0x4BE65213406c3559631edbf41dFE0022d1C97a0c  
-DOT: 13iBEfF1m9JmTAf1WQ4KSqoWraqLLRakNu2HVut2LzzAEHs5  
+DOGE: D7DcccWiaKoznywxsScTwsdXpSwuTPgD5G  
+ADA: addr1q837ch57nrydv6t6kalhlnyfycsk0nxen3lga67zvccpvtlra30faxxg6e5h4dml0lxgjf3pvlxdn8r73m4uye3szchs6qvwkp  
+ETH: 0xeE85b5bAF7613413b0297c2224587664a21aBe89  
+DOT: 14saE3ECEAd6JzqRpitL3XDxMcxFKPbtnm297pYwD4vcGs8K  
+MATIC: 0xeE85b5bAF7613413b0297c2224587664a21aBe89  
+SOL: ARdpFUQGk37n1SM8pwhEVVEbF8NodYLpgYRqYS95fVrP 
 ```
   
 Whether you do it or not, thanks for reading this and I hope this helps you as much as it has helped me getting out of the "paper-seedphrase-hell".  
