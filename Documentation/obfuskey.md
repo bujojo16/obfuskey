@@ -152,9 +152,11 @@ This function can be represented as follow:
 ```python
 offset[n] = (((((((offset[0] +1) * pwd[0]) +1) * pwd[1]) +1) * pwd[2]) +1) * ..) * pwd[n])
 ```
-Which graphically results in this for the password "abcdefg":
+Because there are no pre-defined values in this function - _everything is a variable coming directly from the letters in the password_ - it is not possible to guess any of the resulting value without having the complete password. In order to grasp this, here is what the function looks like for a couple of passwords. Please note that the order is important and that this function is discret, not continue. 
+
+Here are the 12 offset in order for the password "abcdefg":
 ![alt text](12_pwd_abcdefg.png "12 offsets from password abcdefg")
-And here we have the result for the password with only one letter difference, "abcddfg":
+And here we have the offsets for a password with only one letter difference, "abcddfg":
 ![alt text](12_pwd_abcddfg.png "12 offsets from password abcddfg")
 As you can see, the chain of offsets follows a completely different path from starting to end because our first offset value is based on the global password value.
 
@@ -223,7 +225,21 @@ You can choose to use only one very long and very complicated password but event
 
 When performing the obfuscation using the program, you will be asked to add as many passwords as you wish. These passwords will be used to generate an obfuscated seedphrase and the next password will obfuscate the obfuscated seedphrase and none of the "in between" obfuscated seedphrases are saved, only the last one. By doing so, you are effectively exponentially improving security. Let me explain.
 
-If you use two passwords from the rockyou listing to protect your seedphrase, the attacker won't know when he broke one of the passwords meaning he will have to go through every possible password combination. Add a third password and you already have 2,7^21 possible outcome. Now this is only considering you would use three passwords from the rockyou listing (so out of 14 millions possibilities) but actually you will use passwords not in the listing and depending on the length of the passwords, the possibilities quickly grow towards infinity.
+Starting from seedphrase "A" and password "ab", we get the obfuscated seedphrase "B" and then using the password "bc" we end-up with the obfuscated seedphrase "C" as follow:
+```python
+  ab   bc  
+A -> B -> C
+```
+Please note that the order in which you enter the passwords in the obfuscation don't matter. In fact, these can be seen as 2D vectors and the Chasles relation works here.
+
+In the output text file, we only get the obfuscated seedphrase "C" and we lose "B" (and all other "in-between" phrases we would obtain with more passwords) which means an attacker finding your obfuscated seedphrase "C" would have two options:
+- trying to find the two passwords (meaning trying all combinations for "ab" and for each of them all combinations for "bc")
+- trying to find a new "ac" password  
+Because the attacker won't have any info regarding your original seedphrase, trying to find a new "ac" password is equivalent to randomly trying to generate a seedphrase from the mnemonic, since the obfuscated seedphrase don't have any similarities to the original seedphrase.
+
+Trying to break the passwords one by one is technically impossible since the attacker doesn't have any info on the "B" (in between) seedphrase. Even if he would guess one of the passwords, this won't reflect on the outcome if he doesn't have all the other passwords correct as well.
+
+For instance, if you use two passwords from the rockyou listing to protect your seedphrase, the attacker won't know when he broke one of the passwords meaning he will have to go through every possible password combination. Add a third password and you already have 2,7^21 possible outcome. Now this is only considering you would use three passwords from the rockyou listing (so out of 14 millions possibilities) but actually you will use passwords not in the listing and depending on the length of the passwords, the possibilities quickly grow towards infinity.
 
 In reality, because the attacker will not know the length of your passwords and will have only a small amount of hints regarding the passwords, the possibilities using 3 passwords are infinite. The attacker won't have any benefit of using this obfuscation to retrieve your original seedphrase than simply randomly generating seedphrases.
 
