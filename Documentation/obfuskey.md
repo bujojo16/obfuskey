@@ -20,7 +20,7 @@ A cryptocurrency wallet seedphrase reversible, offline, trustless, password base
 ***
 
 ## 1. Background  
-### 1. Why?  
+### 1.1. Why?  
 *Before going deeper into the "hows", let's quickly go through the "whys".*  
   
 Using cryptocurrencies - *which could be summed-up as a very technologically advanced way of managing one's funds* - it felt really stupid to have to rely on a piece of paper to safely store the only way to recover a wallet, i.e. the seedphrase. It feels paradoxical that the only way to safely store it is on a piece of paper which can be:
@@ -58,7 +58,7 @@ The obvious solution to this problem is obfuscation for the following reasons:
 - if you use a passphrase-protected seedphrase, obfuscating your seedphrase makes it theoretically impossible to break without the password(s)
 
 
-### 2. Seedphrase and security
+### 1.2. Seedphrase and security
 Let's say you want to protect your funds and still be able to use crypto in a user-friendly way, you might want to set multiple wallets, possibly some main wallets with 24 words seedphrase + passphrase to maximize security and then a couple of wallets with just a seedphrase because entering the passphrase in your hardware wallet everytime you want to use it might not be the safest/most practical in the end.
 
 
@@ -114,7 +114,7 @@ In order to understand a bit more what happens during the obfuscation, we need t
 
 The core of this obfuscation is the offsets calculation algorithm. The offsets are calculated based on the characters in the password used to protect the seedphrase using a recursive algorithm making the output a progression and not a function. This leads to the advantage that having one or more characters not only doesn't much compromise the safety of the obfuscation but also doesn't give away the offset for the matching word in the seedphrase, as you will see here below.
 
-### 1. Algorithm
+### 3.1. Algorithm
 
 In order to calculate our offsets we are basically using only one function multiple times. This function being recursive and with variable parameters, having one of the offset values or one of the characters (used as the variables in the function) doesn't give away any information about the other offset values. Because of this, we can safely give ourselves some hints on the password to help us retrieving it without giving away more info than the one we decide to.
   
@@ -160,7 +160,7 @@ And here we have the offsets for a password with only one letter difference, "ab
 ![alt text](12_pwd_abcddfg.png "12 offsets from password abcddfg")
 As you can see, the chain of offsets follows a completely different path from starting to end because our first offset value is based on the global password value.
 
-### 2. Theoretical limitations
+### 3.2. Theoretical limitations
 
 Because we are accepting any Unicode input as a password to generate a list of words from the mnemonic, we are not bijecting. In fact, because there is n theoretical limit to the length of a password and every character is one of the 96,000 unicode code-points (in use per today but this could grow) our first set A is theoretically infinite. On the other hand, there are only 2^128 possible 12 words BIP39 seedphrases, so our set B is finite. Because no output of the obfuscation can be null nor can it be outside of the mnemonic, this means we will have duplicates, and in theory, a very large number of them.
   
@@ -184,7 +184,7 @@ With this v2.0 we now have a lot less duplicates as you will see below in the pr
 While the fact that we have more than one password for one set of offsets can be seen as a bug, I prefer to see it as a feature. In the same way this clearly means that another password than the one you have set will desobfuscate your seedphrase, it also renders the attack on your obfuscated seedphrase more difficult. Anyone trying to break your password would either have to test multiple times the same seedphrase they got with a different password or keep track of the billions of seedphrase they got already (because they would face a wall of duplicates) which would slow down significantly the process. This should basically be seen as "not only one password will unlock my seedphrase BUT potentially every seedphrase they will get by brute-forcing it will be a duplicate of another seedphrase already". The biggest safety-argument of this obfuscation is to make it so absurdly difficult that no one will even try.
   
 As you will see in the next chapter, the output of the offset generating algorithm using a large set of passwords is very close to equiprobable.
-### 3. Practical experiments
+### 3.3. Practical experiments
 
 First of all, let's go through the complete "rockyou" password list and analyze what offsets we are getting out of it.
 To do so, we run the full listing and generate 12 offsets (just as we would do to obfuscate a 12 word seedphrase) whatever the length of the password. Then, we go through the outputs and we lookup the occurrences of each of the mnemonic indexes.
@@ -207,7 +207,7 @@ Considering that rockyou contains an immense list of very similar passwords, oft
 
 Let's now talk about the security of all this. Are there any benefits of using obfuscation instead of encryption ? How secure is that obfuscation ?
 
-### 1. Obfuscation vs Encryption
+### 4.1. Obfuscation vs Encryption
 
 First of all, the reason why encryption is not a valid solution to this paper-seedphrase problem is that encrypting your seedphrase using a hashing algorithm or any other encryption method will make it lose the "human machine interface" benefits. If you are willing to write down a hash, you might as well not bother yourself to use a seedphrase and go directly for a private key.
 
@@ -217,7 +217,7 @@ When obfuscating, every outcome is in fact a seemingly valid outcome (in case of
 
 But what if the password you use is in a listing ? Well, thanks to layering, which is our next topic, this is not a problem really. 
 
-### 2. Layering
+### 4.2. Layering
 
 So far we have seen that using one password can efficiently generate a completely new seedphrase that will not resemble the original seedphrase and provide some level of security. However, this level of security is only function of the password we are using and if this password would be in a listing, the obfuscation would be quickly reversed. The real power of this obfuscation is in the layering.
 
