@@ -5,7 +5,7 @@ In short, a cryptocurrency wallet seedphrase reversible, offline, trustless, pas
 ![alt text](Documentation/obfuscation_example.png "Output file from obfuscation after tuning it up with hints")  
 In the picture is an example of the output file you can get after adding hints regarding your passwords.
 
-The documentation here is short and meant for a quick read to get the basics of this program. For the long version, please refer to Obfuskey.md
+The documentation here is short and meant for a quick read to get the basics of this program. For the longer version including the maths behind it, please refer to Documentation/Obfuskey.md
 
 ## Table of content
 1. How to use  
