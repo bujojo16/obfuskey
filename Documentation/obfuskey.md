@@ -1,17 +1,19 @@
 # Obfuskey
 
-A cryptocurrency wallet seedphrase reversible, offline, trustless, password based obfuscation to end the paper-seedphrase nonsense.
+"A cryptocurrency wallet seedphrase reversible, offline, trustless, password based obfuscation to end the paper-seedphrase nonsense."
+
+or 
+
+"Mapping a finite set to an infinite set."
 
 ***
 
 ## Summary
-1. Background
-    1. Why?
-    2. BIP39 and security
+1. Background: Why ?
 2. Obfuscation
 3. Offset calculation
     1. Algorithm
-    2. theoretical limitations
+    2. The math behind it
     3. Practical experiments
 4. Security
     1. Obfuscation vs Encryption
@@ -19,8 +21,9 @@ A cryptocurrency wallet seedphrase reversible, offline, trustless, password base
 
 ***
 
-## 1. Background  
-### 1.1. Why?  
+## 1. Background: Why?
+
+  
 *Before going deeper into the "hows", let's quickly go through the "whys".*  
   
 Using cryptocurrencies - *which could be summed-up as a very technologically advanced way of managing one's funds* - it felt really stupid to have to rely on a piece of paper to safely store the only way to recover a wallet, i.e. the seedphrase. It feels paradoxical that the only way to safely store it is on a piece of paper which can be:
@@ -56,16 +59,6 @@ The obvious solution to this problem is obfuscation for the following reasons:
 - because it is an obfuscation within the mnemonic, it is still under the form of a seedphrase so it is easy to type, easy to print out so you can keep it physically
 - but because it is under the form of a mnemonic phrase, it also means you can't just brute-force it back because you won't know if you successfuly broke it. This will get clearer further down the document.
 - if you use a passphrase-protected seedphrase, obfuscating your seedphrase makes it theoretically impossible to break without the password(s)
-
-
-### 1.2. Seedphrase and security
-Let's say you want to protect your funds and still be able to use crypto in a user-friendly way, you might want to set multiple wallets, possibly some main wallets with 24 words seedphrase + passphrase to maximize security and then a couple of wallets with just a seedphrase because entering the passphrase in your hardware wallet everytime you want to use it might not be the safest/most practical in the end.
-
-
-In this case, your "lower security" wallet without passphrase are a trade-off between ease of use and security. Because you don't use a passphrase, in the end, it is solely protected by the odds of someone randomly entering a seedphrase ending up on your wallet. This means that someone with enough luck - or motivation - could open your wallet by just randomly entering words that are matching your seedphrase. Of course, the sheer amount of possibilities mean that someone targetting *your very own wallet* will most likely never succeed, but opening *any wallet* could be done by randomly entering seedphrases, theoretically. As you will see below, using this obfuscation is not making it any easier to attack your seedphrase. In fact, an attacker will have better odds of opening your wallet by just randomly generating wallets than trying to revert the obfuscated seedphrase because there are more possible outcome with the obfuscation (duplicates).
-
-
-If you are using multiple wallets you end up having multiple seedphrases that you have to protect equally and hiding them all around your house might feel a bit ridiculous after more than a couple. Using this obfuscation, you are getting rid of this problem since you don't need to hide anything at all. You can safely store your seedphrases in plain sight.  
 
  
 ## 2. Obfuscation
@@ -160,31 +153,39 @@ And here we have the offsets for a password with only one letter difference, "ab
 ![alt text](12_pwd_abcddfg.png "12 offsets from password abcddfg")
 As you can see, the chain of offsets follows a completely different path from starting to end because our first offset value is based on the global password value.
 
-### 3.2. Theoretical limitations
+### 3.2. The math behind it
 
-Because we are accepting any Unicode input as a password to generate a list of words from the mnemonic, we are not bijecting. In fact, because there is n theoretical limit to the length of a password and every character is one of the 96,000 unicode code-points (in use per today but this could grow) our first set A is theoretically infinite. On the other hand, there are only 2^128 possible 12 words BIP39 seedphrases, so our set B is finite. Because no output of the obfuscation can be null nor can it be outside of the mnemonic, this means we will have duplicates, and in theory, a very large number of them.
-  
-This obviously means that we will have more than one password generating the same list of offsets, therefore the same list of words. Before adding the overflow (v1.0) these duplicates were very common and defined as follow:
-Given two passwords X and Y of different lengths, if:
-```python
- X.offset == Y.offset mod prime_divisor
-```
-and 
-```python
-X[0..12] == Y[0..12]
-```
-then
-```python
-X.offsetList == X.offsetList
-```
-This was addressed by adding the overflow meaning if the password is longer than the seedphrase we continue to calculate offsets and adding them to the value in the position we are in the list (v2.0).
+#### General Probabilities
 
-With this v2.0 we now have a lot less duplicates as you will see below in the practical examples.
+In this section we will consider a seedphrase being always 12 words long and that passwords are only 20 characters long for simplification.
 
-While the fact that we have more than one password for one set of offsets can be seen as a bug, I prefer to see it as a feature. In the same way this clearly means that another password than the one you have set will desobfuscate your seedphrase, it also renders the attack on your obfuscated seedphrase more difficult. Anyone trying to break your password would either have to test multiple times the same seedphrase they got with a different password or keep track of the billions of seedphrase they got already (because they would face a wall of duplicates) which would slow down significantly the process. This should basically be seen as "not only one password will unlock my seedphrase BUT potentially every seedphrase they will get by brute-forcing it will be a duplicate of another seedphrase already". The biggest safety-argument of this obfuscation is to make it so absurdly difficult that no one will even try.
-  
-As you will see in the next chapter, the output of the offset generating algorithm using a large set of passwords is very close to equiprobable.
-### 3.3. Practical experiments
+Considering a set A containing 2048^12 elements and another set B generated by a function F which takes a string of 20 character taken from the 149,878 possible unicode characters, meaning we have 149,878^20 elements in B but all of these elements are found in A. This means B is containing only elements from A but multiple times.
+
+When obfuscating, we are basically taking one element of A to which we add one element of B in order to obtain another element of A.
+
+The output of the obfuscation has no other connection to the input than the element in B which was generated by the password. In fact, any element of A will be able to return any element of A using at least one element of B.
+
+Because of that, trying to brute force the obfuscation is meaningless since the output could have been generated from any of the possible seedphrases. There is no residual info in the output of the obfuscation. One output doesn't have a limited possible of inputs, rather an infinity of possibilities.
+
+#### Brute-force is meaningless
+
+The reality is that trying to recover a seedphrase by brute-forcing passwords on the obfuscated seedphrase gives actually worst odds than trying to randomly generate seedphrase and hoping it will give the original seedphrase you are looking for. Here is why:
+
+Considering two separate sets A and B and a function F where:
+    - A contains more elements than B
+    - through F, every element of A has exactly one image in B, meaning every element of B corresponds to at least one element in A and most likely more than one
+
+Brute-forcing the obfuscation means trying to generate the correct password by randomly entering chains of characters in the obfuscator. Doing so is equivalent to randomly picking elements of A.
+
+Because the function F is very close to equiprobable in the way it generates the elements in A from B, we have virtually the same amount of every elements of B in A.
+
+The probability of finding the element b in B is|{b}|/|B| = 1/|B|. For searching A, it's |F⁻¹(b)|/|A|, where F⁻¹(b) is the set of elements of A that map to b. Again, assuming that for each b, F⁻¹(b) is about the same size, that size would be about |A|/|B|. Plugging that into |F⁻¹(b)|/|A|, we get (|A|/|B|)/|A| = 1/|B| as well.
+
+This means we have the same amount of chances of finding the original seedphrase by randomly pulling from B than we have from randomly pulling from A, so no better odds than randomly generating seedphrases.
+
+But this is for only one password. Now considering we are using multiple passwords, it becomes clear that brute forcing the obfuscation makes no sense and the odds are better when randomly generating seedphrases.
+
+### 3.2. Practical experiments
 
 First of all, let's go through the complete "rockyou" password list and analyze what offsets we are getting out of it.
 To do so, we run the full listing and generate 12 offsets (just as we would do to obfuscate a 12 word seedphrase) whatever the length of the password. Then, we go through the outputs and we lookup the occurrences of each of the mnemonic indexes.
@@ -251,6 +252,8 @@ You were given an impersonal piece of data under the form of a phrase and asked 
 
 Because of the recursiveness of the algorithm, knowing some of the characters in the passwords are not giving away original seedphrase words therefore giving yourself hints is not compromising the global security.
 
-Given you use more than one password, trying to break it using every possible character combination amounts to *very big* numbers of possibilities, each of them having to be compared to the blockahin.
+Given you use more than one password, trying to break it using every possible character combination amounts to *very big* numbers of possibilities, each of them having to be compared to the blockchain.
+
+Regarding password complexity, if you are using 3 passwords, the complexity doesn't even need to be high to protect your seedphrase efficiently and you could basically use any words.
 
 Given you are using a passphrase, trying to break it is meaningless.
