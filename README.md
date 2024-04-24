@@ -5,7 +5,7 @@ In short, a cryptocurrency wallet seedphrase reversible, offline, trustless, pas
 ![alt text](Documentation/obfuscation_example.png "Output file from obfuscation after tuning it up with hints")  
 In the picture is an example of the output file you can get after adding hints regarding your passwords.
 
-The documentation here is short and meant for a quick read to get the basics of this program. For the longer version including the maths behind it, please refer to Documentation/Obfuskey.md
+The documentation here is short and meant for a quick read to get the basics of this program. For the longer version including the maths behind it, please refer to Documentation/obfuskey.md
 
 ## Table of content
 1. How to use  
@@ -43,52 +43,37 @@ Please note that it is nonsensical to run both an obfuscation and a desobfuscati
 since these operations reciprocate. You should run the desobfuscation on the result of an obfuscation. Pressing "D" after an obfuscation will not return you your original seedphrase but will desobfuscate your original seedphrase since it is the one you have entered. This is not a bug.
 
 ## How it works
-To be properly exact, this program is not obfuscating your seedphrase but rather re-indexing it
-using one or more passwords. This re-indexation can be considered an obfuscation since it renders the 
-obfuscated seedphrase useless if the password is not known. The original idea was an obfuscation and
-the name stuck to the project while the way of doing it became clearer. I would argue that ObfusKey
-sounds a lot nicer than "Re-indexer".  
+To be properly exact, this program is not obfuscating your seedphrase but rather re-indexing it using one or more passwords. This re-indexation can be considered an obfuscation since it renders the obfuscated seedphrase useless if the password is not known. The original idea was an obfuscation and the name stuck to the project while the way of doing it became clearer. I would argue that ObfusKey sounds a lot nicer than "Re-indexer".  
   
-In order to obfuscate your seedphrase, we take the index of the words in the mnemonic and shift
-their position by a value determined by the password you set. Even if your password contains the
-same letters, the offset value is not going to be constant, meaning that if your seedphrase is:
+In order to obfuscate your seedphrase, we take the indexes of the words in the mnemonic and shift their position by a value determined by the password you set. Even if your password contains the same letters, the offset value is not going to be constant, meaning that if your seedphrase is:
 ```bash
 test test test test
 ```
-and your password is : "aaaa", the obfuscated seedphrase will not reflect the shape of your original
-seedphrase but will be:
+and your password is : "aaaa", the obfuscated seedphrase will not reflect the shape of your original seedphrase but will be:
 ```bash
 large lesson roast today
 ```
-And because the obfuscation is not just based on each letters but also on the password as a whole,
-you will not get the same offset with "aaaa" and with "aaaab" for example, which will give you:
+And because the obfuscation is not just based on each letters but also on the password as a whole, you will not get the same offset with "aaaa" and with "aaaab" for example, which will give you:
 ```bash
 trade execute brown client
 ```
 
-When desobfuscating (retrieving your original seedphrase) we simply proceed in reverse, and substract
-the offset.
+When desobfuscating (retrieving your original seedphrase) we simply proceed in reverse, and substract the offset.
 
 ### 2.a Offsetting algorythm  
-This is the short and simplified version, for more details please consult the documentation.
-To obfuscate, we take the password entered and calculate an initial password value based on the
-ordinal of each character in the ASCII table as a first offset value:
+This is the short and simplified version, for more details please consult the documentation. To obfuscate, we take the password entered and calculate an initial password value based on the ordinal of each character in the ASCII table as a first offset value:
 ```python
         offset = 1
         for character in password:
             offset = ord(character) * (offset + 1)
 ```  
-This recursive function gives us the first offset based on the password as a whole.
-Then we populate an array the size of the seedphrase with a newly calculated value based on the first
-offset as follow:  
+This recursive function gives us the first offset based on the password as a whole. Then we populate an array the size of the seedphrase with a newly calculated value based on the first offset as follow:  
 ```python
          for i in range(seedphrase_length):
             offset = ord(password[i]) * (offset +1)
             self.offsetList.append(offset)
 ```  
-This function being recurvise and using variables for each step, even having one of the offset
-values won't give you indications on the rest of the offsets.
-This array is what we are going to use for both obfuscating and desobfuscating our seedphrase.
+This function being recurvise and using variables for each step, even having one of the offset values won't give you indications on the rest of the offsets. This array is what we are going to use for both obfuscating and desobfuscating our seedphrase.
 
 The only difference between obfuscation and desobfuscation is the sign of the operation:
 - When obfuscating, we add the password-generated indexes to each word index from our seedphrase.
