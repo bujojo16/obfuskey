@@ -7,6 +7,12 @@ In the picture is an example of the output file you can get after adding hints r
 
 The documentation here is short and meant for a quick read to get the basics of this program. For the longer version including the maths behind it, please refer to Documentation/obfuskey.md
 
+***
+
+For standalone executables made from this Python program, go to [obfuskey_executables](https://github.com/bujojo16/obfuskey_executables)
+
+***
+
 ## Table of content
 1. How to use  
 1.1 Prerequirements  
