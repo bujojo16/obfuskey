@@ -21,7 +21,7 @@ See section 1.3 for specific instructions.
 ## Table of content
 1. How to use  
 1.1 Prerequirements  
-1.2 Running the program
+1.2 Running the program  
 1.3 Running on Tails Os  
 2. How it works  
 2.a Offsetting algorythm  
