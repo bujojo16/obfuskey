@@ -12,11 +12,17 @@ The documentation here is short and meant for a quick read to get the basics of 
 For standalone executables made from this Python program, go to [obfuskey\_executables](https://github.com/bujojo16/obfuskey_executables)
 
 ***
-//TODO: normal mode and paranoid mode with Tails and link to Tails website
+
+If you want to maximize safety, consider running it on [Tails Os](https://tails.net/).
+
+See section 1.3 for specific instructions. 
+
+***
 ## Table of content
 1. How to use  
 1.1 Prerequirements  
-1.2 Running the program  
+1.2 Running the program
+1.3 Running on Tails Os  
 2. How it works  
 2.a Offsetting algorythm  
 2.b Security and obfuscation multiplier  
@@ -47,6 +53,21 @@ python main.py
 
 Please note that it is nonsensical to run both an obfuscation and a desobfuscation on the same seedphrase
 since these operations reciprocate. You should run the desobfuscation on the result of an obfuscation. Pressing "D" after an obfuscation will not return you your original seedphrase but will desobfuscate your original seedphrase since it is the one you have entered. This is not a bug.
+
+### 1.3 Running on Tails Os
+In case you want to reduce risks of someone spying on you when using Obfuskey, it is recommended to use it on Tails Os. To do so, you have multiple options, you can:  
+- directly in your Tails Os, install Python 3.9 or higher, clone this repo and run it as previously explained (not recommended)
+- directly in your Tails Os, download the "obfuskey\_executables" repo and follow the instructions in the README over there (recommended)
+- on your Linux computer, make your own executable based on this repo so you can be sure of what you are running (more complicated)
+
+For the last option, you will need to have:
+- Python 3.9 or higher installed on your Linux system, 
+- PyInstaller installed (pip install pyinstaller),
+- a Tails Os USB stick with a version of Tails Os matching your Linux system's version
+
+What I mean by this last point is that you might face difficulties when trying to run a PyInstaller executable on Tails Os because of differences in libraries that are not included in the executable. For example, an executable made with Ubuntu 24.04 won't run on a Tails Os 5.2 because of GLIBC library. A way around is to make your own executable from an older Ubuntu version so your GLIBC library should be compatible with the newer Tails Os version.
+
+**The easiest way remains to create a new Tails Os USB stick with the latest version of it and just run the "obfuskey\_executables".**
 
 ## How it works
 To be properly exact, this program is not obfuscating your seedphrase but rather re-indexing it using one or more passwords. This re-indexation can be considered an obfuscation since it renders the obfuscated seedphrase useless if the password is not known. The original idea was an obfuscation and the name stuck to the project while the way of doing it became clearer. I would argue that ObfusKey sounds a lot nicer than "Re-indexer".  
