@@ -9,10 +9,10 @@ The documentation here is short and meant for a quick read to get the basics of 
 
 ***
 
-For standalone executables made from this Python program, go to [obfuskey_executables](https://github.com/bujojo16/obfuskey_executables)
+For standalone executables made from this Python program, go to [obfuskey\_executables](https://github.com/bujojo16/obfuskey_executables)
 
 ***
-
+//TODO: normal mode and paranoid mode with Tails and link to Tails website
 ## Table of content
 1. How to use  
 1.1 Prerequirements  
