@@ -9,7 +9,7 @@ from obfuscator import Obfuscator
 
 class UserInterface:
     width = 88
-    version = "2.1"
+    version = "2.2"
     texts = {
         'main': "\n\nTo interact with this software, choose one of the actions listed by typing the letter located within the brackets [] in front of the action you want to perform and then press enter:\n\n\n \t\t[H] Help \t[O] Obfuscator \t\t[Q] Quit\n\n",
         'obfuscator': "\n\nFor a clear description of the following steps, use [I]. To proceed forward and start choosing your mnemonic, use [P]. At any input, you can quit the program using [Q] or return to the previous menu using [B].\n\n\n  \t[I] Info\t[P] Proceed\t[B] Back\t[Q] Quit\n",
