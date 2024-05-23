@@ -11,15 +11,16 @@ class Output:
         Output.write_output_to_file(output_file_path, password_list, seedphrase.obfuscated_phrase, version)    
         return {'success': True, 'message': f"SUCCESS - File {output_file_path} created"}
    
-    def write_output_to_file(output_file_path, password_list, seedphrase, version):
+    def write_output_to_file(output_file_path, password_objects_list, seedphrase, version):
+        #To make it easier to tune-up the output, the password is shown fully and it is
+        #up to the user to replace characters. Ideally, there would be only a couple of
+        #visible characters and mostly "*".
         display_password = ""
         i = 1
-        for password in password_list: #TODO: maybe randomie which character to display?
-            if len(password.password) > 2:
-                visible_character = password.password[2]
-            else:
-                visible_character = "*"
-            display_password += f"\t{i}.: **{visible_character}**************************\n"
+        total_length = 32
+        for password_object in password_objects_list:
+            stars = "*" * (total_length - len(password_object.password)) 
+            display_password += f"\t{i}.: {password_object.password}{stars}\n"
             i +=1
         f = open(output_file_path, 'w')
         f.write(f"Passwords:\n {display_password}\n\nObfuscated seedphrase: {' '.join(seedphrase)}")
