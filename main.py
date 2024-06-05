@@ -9,7 +9,7 @@ from obfuscator import Obfuscator
 
 class UserInterface:
     width = 88
-    version = "2.1"
+    version = "2.2"
     texts = {
         'main': "\n\nTo interact with this software, choose one of the actions listed by typing the letter located within the brackets [] in front of the action you want to perform and then press enter:\n\n\n \t\t[H] Help \t[O] Obfuscator \t\t[Q] Quit\n\n",
         'obfuscator': "\n\nFor a clear description of the following steps, use [I]. To proceed forward and start choosing your mnemonic, use [P]. At any input, you can quit the program using [Q] or return to the previous menu using [B].\n\n\n  \t[I] Info\t[P] Proceed\t[B] Back\t[Q] Quit\n",
@@ -28,9 +28,9 @@ class UserInterface:
         'output-setter': "Obfuscator - Set Output",
     }
     infos = {
-        'obfuscator': "This program is going to ask you three things:\n  - The mnemonic from which your seedphrase is made (usually BIP39).\n  - Your private key under the form of a seedphrase.\n  - One or more password(s) to calculate your obfuscated seedphrase. \n\nYou will then have to choose do you want to obfuscate it or desobfuscate it. \nObfuscating it will output a text file (named \"obfuscation.txt\" by default) where you will find your obfuscated seedphrase as well as one character from each password. \n\nYou can freely modify this text file but keeping the number of hints on your passwords minimum is crucial for security. \n\nDesobfuscating will display your original seedphrase on the screen only and not save it to any text file for security reason. \n\nPress Enter to close this info box, \"b\" to leave the obfuscator and return to the main menu, \"q\" to quit the program.",
+        'obfuscator': "This program is going to ask you three things:\n  - The mnemonic from which your seedphrase is made (usually BIP39).\n  - Your private key under the form of a seedphrase.\n  - One or more password(s) to calculate your obfuscated seedphrase. \n\nYou will then have to choose do you want to obfuscate it or desobfuscate it. \nObfuscating it will output a text file (named \"obfuscation.txt\" by default) where you will find your obfuscated seedphrase as well as all your passwords. It is up to you to then hide most of your password, leaving only a few characters of choice. \n\nYou can freely modify this text file but keeping the number of hints on your passwords minimum is crucial for security. Ideally, you should have only a couple of visible characters and very personal hints. \n\nDesobfuscating will display your original seedphrase on the screen only and not save it to any text file for security reason. \n\nPress Enter to close this info box, \"b\" to leave the obfuscator and return to the main menu, \"q\" to quit the program.",
         'password': "The obfuscation process is using the characters in your password to offset the words of your seedphrase within the mnemonic. You can use any character from the Unicode standard so technically any character you can type here is valid. While one password is enough to decouple the obfuscated seedphrase from the original one, it doesn't provide a great brute-force resistance. Adding a second password on top significantly increases the brute-forcing resistance. In case you want to use only one password, it should be long (longer than 24 characters) and include multiple uncommon characters (,;:.-_?! etc..). On the other hand, doubling the passwords don't necessarily require both passwords to be very complicated and/or very different from one another to maintain good security. \n\nPress Enter to close this info box, \"b\" to leave the obfuscator and return to the main menu, \"q\" to quit the program.",
-        'output': "Obfuscate:\n By choosing this action, your seedphrase will be obfuscated using the mnemonic and password(s). You will find a text file with the resulting obfuscated seedphrase as well as indications on your passwords in the \"Output\" directory. The name of the file is a recursive hashing of the original seedphrase over every word using the sha256 algorithm so you can easily see if you have obfuscated the same seedphrase twice by mistake. You should tune up this file, add personal hints about the passwords that only you can understand so you will for sure be able to retrieve your seedphrase.\n\nDesobfuscate:\n By choosing this action, your seedphrase will be desobfuscated using the mnemonic and password(s). The outcome will only be displayed on this screen and not saved anywhere. It is up to you to write it down to use it later on. Remember to keep your desobfuscated seedphrase safe.\n\nPress Enter to close this info box, \"b\" to leave the obfuscator and return to the main menu, \"q\" to quit the program.",
+        'output': "Obfuscate:\n By choosing this action, your seedphrase will be obfuscated using the mnemonic and password(s). You will find a text file with the resulting obfuscated seedphrase as well as indications on your passwords in the \"Output\" directory. You are to choose a name for the file so you will know which wallets it is backing up. By default, if no file name is entered, the output file will be named \"obfuscation.txt\". You are expected to tune up this file, add personal hints about the passwords that only you can understand so you will for sure be able to retrieve your seedphrase.\n\nDesobfuscate:\n By choosing this action, your seedphrase will be desobfuscated using the mnemonic and password(s). The outcome will only be displayed on this screen and not saved anywhere. It is up to you to write it down to use it later on. Remember to keep your desobfuscated seedphrase safe.\n\nPress Enter to close this info box, \"b\" to leave the obfuscator and return to the main menu, \"q\" to quit the program.",
     }
         
     def __init__(self, text_length = width, version = version):
@@ -385,7 +385,7 @@ def output(session):
                     if saved_to_file:
                         confirming = True
                         while confirming:
-                            print(format_string_to_fit("A validation test on your obfuscated seedphrase returned your original seedphrase. The process is successful and the output file has now been created in the subdirectory /Output/.\n\n\n\t\t\t[B] Back \t\t[Q] Quit", UserInterface.width))
+                            print(format_string_to_fit("\n\nA validation test on your obfuscated seedphrase returned your original seedphrase. The process is successful and the output file has now been created in the subdirectory /Output/.\n\n\n\t\t\t[B] Back \t\t[Q] Quit", UserInterface.width))
                             state = input("\n-> ")
                             match state:
                                 case "Q" | "q":
@@ -398,7 +398,7 @@ def output(session):
                     else:
                         confirming = True
                         while confirming:
-                            print(format_string_to_fit("Obfuscation was performed and tested successfully but writing the output file couldn't be done.\n\n\t\t\t[B] Back\t\t\t [Q] Quit \n\n -> ", UserInterface.width))
+                            print(format_string_to_fit("\nObfuscation was performed and tested successfully but writing the output file couldn't be done.\n\n\t\t\t[B] Back\t\t\t [Q] Quit \n\n -> ", UserInterface.width))
                             state = input("-> ")
                             match state:
                                 case "Q" | "q":
