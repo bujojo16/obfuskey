@@ -385,7 +385,7 @@ def output(session):
                     if saved_to_file:
                         confirming = True
                         while confirming:
-                            print(format_string_to_fit("A validation test on your obfuscated seedphrase returned your original seedphrase. The process is successful and the output file has now been created in the subdirectory /Output/.\n\n\n\t\t\t[B] Back \t\t[Q] Quit", UserInterface.width))
+                            print(format_string_to_fit("\n\nA validation test on your obfuscated seedphrase returned your original seedphrase. The process is successful and the output file has now been created in the subdirectory /Output/.\n\n\n\t\t\t[B] Back \t\t[Q] Quit", UserInterface.width))
                             state = input("\n-> ")
                             match state:
                                 case "Q" | "q":
@@ -398,7 +398,7 @@ def output(session):
                     else:
                         confirming = True
                         while confirming:
-                            print(format_string_to_fit("Obfuscation was performed and tested successfully but writing the output file couldn't be done.\n\n\t\t\t[B] Back\t\t\t [Q] Quit \n\n -> ", UserInterface.width))
+                            print(format_string_to_fit("\nObfuscation was performed and tested successfully but writing the output file couldn't be done.\n\n\t\t\t[B] Back\t\t\t [Q] Quit \n\n -> ", UserInterface.width))
                             state = input("-> ")
                             match state:
                                 case "Q" | "q":
