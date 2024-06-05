@@ -5,7 +5,7 @@
 ***
 
 ### v2.2
-Previously the output file was created with only the second character of the password visible, the rest being just asteriscs ("*") which was for sure safer in a way that no trace of the passwords would be left on disk but at the same time rendering the tuning of the password to reveal only a few characters very combersome and terribly not user-friendly, which could lead up to the wrong position of the characters to be displayed. With this new version, the complete password is displayed and it is up to the user to replace most of it by asteriscs or any other character.
+Previously the output file was created with only the second character of the password visible, the rest being just asterisks ("*") which was for sure safer in a way that no trace of the passwords would be left on disk but at the same time rendering the tuning of the password to reveal only a few characters very combersome and terribly not user-friendly, which could lead up to the wrong position of the characters to be displayed. With this new version, the complete password is displayed and it is up to the user to replace most of it by asteriscs or any other character.
 
 Changes made to files:  
     - main.py  
