@@ -33,6 +33,8 @@ You can of course try to mitigate the second point by using a different media th
 
 Lets quickly state here that I am aware of the existence of passphrase-protected seedphrases but this doesn't solve the problem since you still should never have your seedphrase exposed to the world even if it is protected by a passphrase.
 
+Also, not all wallets are using passphrases which means for these lightweight wallets you are only relying on the safety of your seedphrase storage.
+
 You can of course opt for a digital storage, which is a terrible idea for the following reasons:
   
 1. Accessibility
@@ -55,33 +57,33 @@ Trying to break a password encryption is only a matter of computing power and ca
 The main take-out is that to be perfectly safe you would need to have it both on a physical media AND under a digital form BUT without having to rely on any third party for the storage and protection of the file WHILE keeping the physical copy not readable.
 
 The obvious solution to this problem is obfuscation for the following reasons:
-- once obfuscated, it is useless unless you have the way to desobfuscate it so you can keep it digitally
-- because it is an obfuscation within the mnemonic, it is still under the form of a seedphrase so it is easy to type, easy to print out so you can keep it physically
-- but because it is under the form of a mnemonic phrase, it also means you can't just brute-force it back because you won't know if you successfuly broke it. This will get clearer further down the document.
-- if you use a passphrase-protected seedphrase, obfuscating your seedphrase makes it theoretically impossible to break without the password(s)
+    - once obfuscated, it is useless unless you have the way to desobfuscate it so you can keep it digitally
+    - because it is an obfuscation within the mnemonic, it is still under the form of a seedphrase so it is easy to type, easy to print out so you can keep it physically
+    - but because it is under the form of a mnemonic phrase, it also means you can't just brute-force it back because you won't know if you successfuly broke it. This will get clearer further down the document.
+    - if you use a passphrase-protected seedphrase, obfuscating your seedphrase makes it theoretically impossible to break without the password(s)
 
  
 ## 2. Obfuscation
 
 Before going forward, let's define some words:
-- Seedphrase: a list of words in a specific order which grants access to a wallet
-- Mnemonic: the listing of all possible words used to create the seedphrase. By default we will be talking about BIP39-english which contains 2048 unique words.
-- Index: Usually the position of an item in a list. Because the words in a seedphrase are taken from the mnemonic, every word has a unique index in the mnemonic meaning every word can be seen as an index in the mnemonic. Therefore:
+    - Seedphrase: a list of words in a specific order which grants access to a wallet
+    - Mnemonic: the listing of all possible words used to create the seedphrase. By default we will be talking about BIP39-english which contains 2048 unique words.
+    - Index: Usually the position of an item in a list. Because the words in a seedphrase are taken from the mnemonic, every word has a unique index in the mnemonic meaning every word can be seen as an index in the mnemonic. Therefore:
 ```python
 "test test test test" == [1789, 1789, 1789, 1789]
 ```
-1789 being the index of the word "test" in the BIP39-english mnemonic.    
-- The shape of a seedphrase: This can be seen as the fingerprint of your seedphrase. Since your seedphrase is not a list of words but actually a list of indexes, it can be plotted in a 2D space with the index in the list as x-axis and the index of the word in the mnemonic as the y-axis.
+    1789 being the index of the word "test" in the BIP39-english mnemonic.    
+    - The shape of a seedphrase: This can be seen as the fingerprint of your seedphrase. Since your seedphrase is not a list of words but actually a list of indexes, it can be plotted in a 2D space with the index in the list as x-axis and the index of the word in the mnemonic as the y-axis.
 ![alt text](24_words_seedphrase_fingerprint.png "Shape of a 24 words seedphrase")
 In this case the seedphrase is: "ball aware caught gown detect broom scene foot process citizen chief beef next tape fabric eagle noise cool club mouse arctic stereo hotel march"   
    
-- Offset: considering a seedphrase and its obfuscated version, the offset is the numerical distance between the indexes at the same position in the two seedphrases.
-- seedphrase word-gap: the distance between consecutive indexes within the mnemonic. For example, considering the phrase:
+    - Offset: considering a seedphrase and its obfuscated version, the offset is the numerical distance between the indexes at the same position in the two seedphrases.
+    - seedphrase word-gap: the distance between consecutive indexes within the mnemonic. For example, considering the phrase:
 ```python
 phrase = ['test', 'test']
 phrase == [1789, 1789]
 ```
-the word-gap is 0.
+    the word-gap is 0.
 
 With this obfuscation, we simply re-index every word of the seedphrase into the mnemonic without keeping its original shape (non conservation of word-gaps) by using one or more - but preferably more - password(s). The output is a completely new seedphrase that has no other link to your original seedphrase than the passwords you have set and can only be retrieved by desobfuscating it using this same obfuscation algorithm in reverse.
 ![alt text](24_test_obf_example.png "24 times the word test obfuscated")
@@ -105,7 +107,7 @@ In order to understand a bit more what happens during the obfuscation, we need t
   
 ## 3. Offsets calculation
 
-The core of this obfuscation is the offsets calculation algorithm. The offsets are calculated based on the characters in the password used to protect the seedphrase using a recursive algorithm making the output a progression and not a function. This leads to the advantage that having one or more characters not only doesn't much compromise the safety of the obfuscation but also doesn't give away the offset for the matching word in the seedphrase, as you will see here below.
+The core of this obfuscation is the offsets calculation algorithm. The offsets are calculated directly from the password(s) you are setting. Each password is a word, therefore a set of characters which all have a position (an index) in the Unicode table. Using an arithmetic progression using a variable input (and not a linear function), we use each characer in your password(s) to calculate an offset for the word in the matching position (there is a rollover/overflow in case we have a password longer than the seedphrase which makes it even stronger). Because we are using a recursion and not a linear function, the outcome of each offset calculation is directly linked to all of the previous offsets calculated. The main advantage here is that having partial knowledge of the content of the password(s) doesn't compromise the safety of the obfuscation but also doesn't give away the offset for the matching word in the seedphrase, as you will see here below.
 
 ### 3.1. Algorithm
 
@@ -128,16 +130,18 @@ for element in pwd:
     offset = element * (offset + 1)
 ```
 
-Once the offset is set as a large number based on every characters of the password, we run again this algorithm but now saving each one of the offsets into an array the length of our seedphrase (one offset per word in the seedphrase) initialized to 0:
+Once the offset is set as a large number based on every characters of the password, we run again this algorithm but now saving each one of the offsets into an array the length of our seedphrase (one offset per word in the seedphrase) initialized to 0. This means we are using the value previously calculated as the base for the first offset calculation, meaning it all depends on the globality of the password for the first offset and then, the following offsets will all be impacted by this because of the recursive nature of the functions used:
 ```python
 offsetList = [] 
+//Initializing the array with zeros
 for i in range(seedphrase_length):
     offsetList.append(0)
+//calculating each offset
 for i in range(len(pwd)):
     offset = pwd[i] * (offset + 1)
     offsetList[i%seedphrase_length] = offsetList[i%seedphrase_length] + offset%prime_divisor    #We are overflowing if the password is longer than the seedphrase
 ```
-where prime\_divisor is the first prime number bigger than our mnemonic size.
+where "prime\_divisor" is the first prime number bigger than our mnemonic size.
 
 This way, we are generating a different offset even if the character is the same and the outcome is seemingly random.
 
@@ -159,34 +163,53 @@ As you can see, the chain of offsets follows a completely different path from st
 
 In this section we will consider a seedphrase being always 12 words long and that passwords are only 20 characters long for simplification. Also, we will consider the seedphrases taken from the BIP39 mnemonic which contains 2048 words. 
 
-Considering a set A containing 2048^12 elements and another set B containing elements generated by a function f which takes a string of 20 character taken from the 149,878 possible unicode characters which means that B comprehends 149,878^20 elements. The elements in both sets are lists of 12 integers.
-
- hich are all from A, meaning there are multiple times the same elements in B.  but all of these elements are found in A. This means B is containing only elements from A but multiple times.
+Considering a set A containing 2048¹² elements and another set B, containing elements generated by a function f, which takes a string of 20 character taken from the 149,878 possible unicode characters (which means that B comprehends 149,878²⁰ elements) as its input and outputs an element of A. The elements in both sets are lists of 12 integers which are all found in the set A. Because we have more elements in B than we have in A, and all elements of B are strictly found in A, we therefore have multiple time the same elements in B (elements of B are not unique but elements of A are) because we have a lot more inputs possible but only a limited amount of possible outputs.
 
 For simplification, we declare a function g which is our obfuscating function and its reciprocal g⁻¹, the desobfuscation, as follow:
-g a function from A into A where
+```python
+g a function from A into B where
 g(x,y) = (x + y) mod(2053)
+```
 In plain english, for two list x and y of 12 integers we add the elements with same index together. We then take the modulo 2053 of the result of the additions. This number, 2053 is the next prime number bigger than 2048.
 
-When obfuscating, we take "a", an element of A and b and element of B, giving g(a,b). The output is new list of 12 integers which is found in A, called "c". This new element "c" found in A has no other connection to "a" than through g with "b", which means without having "b" we cannot retrieve "a" from "c" other than by randomly picking "b" and trying to retrieve "a" using g⁻¹.
+When obfuscating, we take "a", an element of A and b and element of B, giving g(a,b). The output is a new list of 12 integers which is found in A, called "c". This new element "c" found in A has no other connection to "a" than through g with "b", which means without having "b" we cannot retrieve "a" from "c" other than by randomly picking "b" and trying to retrieve "a" using g⁻¹.
 
 Moreover, for any two elements of A, there is at least one element of B connecting them through g.
 
-Because of that, trying to brute force the obfuscation is meaningless since the output could have been generated from any of the possible seedphrases. There is no residual info in the output of the obfuscation. One output doesn't have a limited amount of possible inputs, rather an infinity of possibilities.
+Because of that, trying to brute force the obfuscation is meaningless since the output could have been generated from any of the possible seedphrases. There is no residual info in the output of the obfuscation. One output doesn't have a limited amount of possible inputs, rather an infinity of possible inputs.
 
 #### Probabilities regarding brute-forcing
 
 The reality is that trying to recover a seedphrase by brute-forcing passwords on the obfuscated seedphrase gives actually worse odds than trying to randomly generate seedphrase and hoping it will give the original seedphrase you are looking for. Here is why:
 
-Considering two separate sets A and B and a function F where:
-    - A contains more elements than B
-    - through F, every element of A has exactly one image in B, meaning every element of B corresponds to at least one element in A and most likely more than one
+Considering two separate sets A and B and a function F where:    
+    - A contains more elements than B   
+    - through F, every element of B has an image on A (obfuscation)
+    - through F⁻¹, every element of A has exactly one image in B, meaning every element of B corresponds to at least one element in A and most likely more than one   
 
-Brute-forcing the obfuscation means trying to generate the correct password by randomly entering chains of characters in the obfuscator. Doing so is equivalent to randomly picking elements of A.
+In our context, B is the set of all possible seedphrases and A is the set of all combo [obfuscated-seedphrase, password] which gives a seedphrase through the desobfuscation, here F⁻¹. For any given password and obfuscated seedphrase, there is only one seedphrase but the same seedphrase with a different password will output a different obfuscated seedphrase.
+
+Brute-forcing the obfuscation means trying to generate the correct password by randomly entering chains of characters in the obfuscator. Doing so is equivalent to randomly picking elements of A, which are combos [obfuscated-seedphrase, password] and hoping to find the element in B that you are looking for.
 
 Because the function F is very close to equiprobable in the way it generates the elements in A from B, we have virtually the same amount of every elements of B in A.
 
-The probability of finding the element b in B is|{b}|/|B| = 1/|B|. For searching A, it's |F⁻¹(b)|/|A|, where F⁻¹(b) is the set of elements of A that map to b. Again, assuming that for each b, F⁻¹(b) is about the same size, that size would be about |A|/|B|. Plugging that into |F⁻¹(b)|/|A|, we get (|A|/|B|)/|A| = 1/|B| as well.
+The probability of finding the element b in B is:
+```python
+|{b}|/|B| = 1/|B|
+```
+For searching A, it is:
+```python
+|F⁻¹(b)|/|A|
+```
+where F⁻¹(b) is the set of elements of A that map to b. Again, assuming that for each b, F⁻¹(b) is about the same size, that size would be about |A|/|B|. Plugging that into 
+```python
+|F⁻¹(b)|/|A|
+```
+we get 
+```python
+(|A|/|B|)/|A| = 1/|B| 
+```
+as well.
 
 This means we have the same amount of chances of finding the original seedphrase by randomly pulling from B than we have from randomly pulling from A, so no better odds than randomly generating seedphrases.
 
