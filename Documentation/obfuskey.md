@@ -180,7 +180,7 @@ Because of that, trying to brute force the obfuscation is meaningless since the 
 
 #### Probabilities regarding brute-forcing
 
-The reality is that trying to recover a seedphrase by brute-forcing passwords on the obfuscated seedphrase gives actually worse odds than trying to randomly generate seedphrase and hoping it will give the original seedphrase you are looking for. Here is why:
+The reality is that trying to recover a seedphrase by brute-forcing passwords on the obfuscated seedphrase gives actually worse odds than trying to randomly generate seedphrase and hoping it will give the original seedphrase you are looking for. In plain English, you have better chances of finding the wallet you are looking for by simply randomly generating seedphrase (by shuffling the words from the mnemonic) than trying to break the obfuscation by randomly generating passwords on an obfuscated seedphrase. Here is why:
 
 Considering two separate sets A and B and a function F where:    
     - A contains more elements than B   
