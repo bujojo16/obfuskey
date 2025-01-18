@@ -184,12 +184,12 @@ The reality is that trying to recover a seedphrase by brute-forcing passwords on
 
 Considering two separate sets A and B and a function F where:    
     - A contains more elements than B   
-    - through F, every element of B has an image on A (obfuscation)
+    - through F, every element of B has an image in A (obfuscation)
     - through F⁻¹, every element of A has exactly one image in B, meaning every element of B corresponds to at least one element in A and most likely more than one   
 
-In our context, B is the set of all possible seedphrases and A is the set of all combo [obfuscated-seedphrase, password] which gives a seedphrase through the desobfuscation, here F⁻¹. For any given password and obfuscated seedphrase, there is only one seedphrase but the same seedphrase with a different password will output a different obfuscated seedphrase.
+In our context, B is the set of all possible seedphrases and A is the set of all pairs [obfuscated-seedphrase, password] which gives a seedphrase through the desobfuscation, here F⁻¹. For any given password and obfuscated seedphrase, there is only one seedphrase but the same seedphrase with a different password will output a different obfuscated seedphrase.
 
-Brute-forcing the obfuscation means trying to generate the correct password by randomly entering chains of characters in the obfuscator. Doing so is equivalent to randomly picking elements of A, which are combos [obfuscated-seedphrase, password] and hoping to find the element in B that you are looking for.
+Brute-forcing the obfuscation means trying to generate the correct password by randomly entering chains of characters in the obfuscator. Doing so is equivalent to randomly picking elements of A, which are pairs [obfuscated-seedphrase, password] and hoping to find the element in B that you are looking for.
 
 Because the function F is very close to equiprobable in the way it generates the elements in A from B, we have virtually the same amount of every elements of B in A.
 
