@@ -58,33 +58,31 @@ Trying to break a password encryption is only a matter of computing power and ca
 The main take-out is that to be perfectly safe you would need to have it both on a physical media AND under a digital form BUT without having to rely on any third party for the storage and protection of the file WHILE keeping the physical copy not readable.
 
 The obvious solution to this problem is obfuscation for the following reasons:
-    - once obfuscated, it is useless unless you have the way to desobfuscate it so you can keep it digitally
-    - because it is an obfuscation within the mnemonic, it is still under the form of a seedphrase so it is easy to type, easy to print out so you can keep it physically
-    - but because it is under the form of a mnemonic phrase, it also means you can't just brute-force it back because you won't know if you successfuly broke it. This will get clearer further down the document.
-    - if you use a passphrase-protected seedphrase, obfuscating your seedphrase makes it theoretically impossible to break without the password(s)
-
+- once obfuscated, it is useless unless you have the way to desobfuscate it so you can keep it digitally
+- because it is an obfuscation within the mnemonic, it is still under the form of a seedphrase so it is easy to type, easy to print out so you can keep it physically
+- but because it is under the form of a mnemonic phrase, it also means you can't just brute-force it back because you won't know if you successfuly broke it. This will get clearer further down the document.
+- if you use a passphrase-protected seedphrase, obfuscating your seedphrase makes it theoretically impossible to break without the password(s)
  
 ## 2. Obfuscation
 
 Before going forward, let's define some words:
-    - Seedphrase: a list of words in a specific order which grants access to a wallet
-    - Mnemonic: the listing of all possible words used to create the seedphrase. By default we will be talking about BIP39-english which contains 2048 unique words.
-    - Index: Usually the position of an item in a list. Because the words in a seedphrase are taken from the mnemonic, every word has a unique index in the mnemonic meaning every word can be seen as an index in the mnemonic. Therefore:
+- Seedphrase: a list of words in a specific order which grants access to a wallet
+- Mnemonic: the listing of all possible words used to create the seedphrase. By default we will be talking about BIP39-english which contains 2048 unique words.
+- Index: Usually the position of an item in a list. Because the words in a seedphrase are taken from the mnemonic, every word has a unique index in the mnemonic meaning every word can be seen as an index in the mnemonic. Therefore:
 ```python
 "test test test test" == [1789, 1789, 1789, 1789]
 ```
-    1789 being the index of the word "test" in the BIP39-english mnemonic.    
-    - The shape of a seedphrase: This can be seen as the fingerprint of your seedphrase. Since your seedphrase is not a list of words but actually a list of indexes, it can be plotted in a 2D space with the index in the list as x-axis and the index of the word in the mnemonic as the y-axis.
+1789 being the index of the word "test" in the BIP39-english mnemonic.
+- The shape of a seedphrase: This can be seen as the fingerprint of your seedphrase. Since your seedphrase is not a list of words but actually a list of indexes, it can be plotted in a 2D space with the index in the list as x-axis and the index of the word in the mnemonic as the y-axis.
 ![alt text](24_words_seedphrase_fingerprint.png "Shape of a 24 words seedphrase")
-In this case the seedphrase is: "ball aware caught gown detect broom scene foot process citizen chief beef next tape fabric eagle noise cool club mouse arctic stereo hotel march"   
-   
-    - Offset: considering a seedphrase and its obfuscated version, the offset is the numerical distance between the indexes at the same position in the two seedphrases.
-    - seedphrase word-gap: the distance between consecutive indexes within the mnemonic. For example, considering the phrase:
+In this case the seedphrase is: "ball aware caught gown detect broom scene foot process citizen chief beef next tape fabric eagle noise cool club mouse arctic stereo hotel march" 
+- Offset: considering a seedphrase and its obfuscated version, the offset is the numerical distance between the indexes at the same position in the two seedphrases.
+- seedphrase word-gap: the distance between consecutive indexes within the mnemonic. For example, considering the phrase:
 ```python
 phrase = ['test', 'test']
 phrase == [1789, 1789]
 ```
-    the word-gap is 0.
+the word-gap is 0.
 
 With this obfuscation, we simply re-index every word of the seedphrase into the mnemonic without keeping its original shape (non conservation of word-gaps) by using one or more - but preferably more - password(s). The output is a completely new seedphrase that has no other link to your original seedphrase than the passwords you have set and can only be retrieved by desobfuscating it using this same obfuscation algorithm in reverse.
 ![alt text](24_test_obf_example.png "24 times the word test obfuscated")
@@ -183,10 +181,10 @@ Because of that, trying to brute force the obfuscation is meaningless since the 
 
 The reality is that trying to recover a seedphrase by brute-forcing passwords on the obfuscated seedphrase gives actually worse odds than trying to randomly generate seedphrase and hoping it will give the original seedphrase you are looking for. In plain English, you have better chances of finding the wallet you are looking for by simply randomly generating seedphrase (by shuffling the words from the mnemonic) than trying to break the obfuscation by randomly generating passwords on an obfuscated seedphrase. Here is why:
 
-Considering two separate sets A and B and a function F where:    
-    - A contains more elements than B   
-    - through F, every element of B has an image in A (obfuscation)
-    - through F⁻¹, every element of A has exactly one image in B, meaning every element of B corresponds to at least one element in A and most likely more than one   
+Considering two separate sets A and B and a function F where: 
+- A contains more elements than B   
+- through F, every element of B has an image in A (obfuscation)
+- through F⁻¹, every element of A has exactly one image in B, meaning every element of B corresponds to at least one element in A and most likely more than one 
 
 In our context, B is the set of all possible seedphrases and A is the set of all pairs [obfuscated-seedphrase, password] which gives a seedphrase through the desobfuscation, here F⁻¹. For any given password and obfuscated seedphrase, there is only one seedphrase but the same seedphrase with a different password will output a different obfuscated seedphrase.
 
